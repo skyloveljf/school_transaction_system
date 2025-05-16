@@ -13,11 +13,11 @@
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+          <el-input v-model="form.password" show-password placeholder="请输入密码" />
         </el-form-item>
 
         <el-form-item v-if="!isLogin" label="确认密码" prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="请再次输入密码" />
+          <el-input v-model="form.confirmPassword" show-password placeholder="请再次输入密码" />
         </el-form-item>
 
         <el-form-item>
@@ -88,7 +88,7 @@ const handleSubmit = async () => {
       if (role === 'admin') {
         router.push('/admin')
       } else {
-        router.push('/home')
+        router.push('/userhome')
       }
     } else {
       await registerApi({ ...data })

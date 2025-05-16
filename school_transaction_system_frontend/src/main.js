@@ -9,6 +9,8 @@ import 'element-plus/dist/index.css'
 const app = createApp(App)
 
 app.use(router)
+console.log(router.getRoutes().map(r => r.path))
+
 app.use(ElementPlus)
 
 app.mount('#app')
