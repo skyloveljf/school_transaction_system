@@ -12,7 +12,7 @@
           src="https://img.keaitupian.cn/uploads/upimg/1597372353577123.jpg"
           style="margin-right: 10px"
         />
-        <span class="welcome">欢迎，condingsky</span>
+        <span class="welcome">欢迎，codingsky</span>
         <el-button type="danger" plain @click="logout" style="margin-left: 20px;">退出登录</el-button>
       </div>
     </el-header>
@@ -38,23 +38,29 @@
               <el-icon><Star /></el-icon> 我的收藏
             </template>
           </el-tab-pane>
+
+          <el-tab-pane name="profile">
+            <template #label>
+              <el-icon><User /></el-icon> 个人信息
+            </template>
+          </el-tab-pane>
         </el-tabs>
 
         <div class="tab-content card">
           <BrowseProducts v-if="activeTab === 'browse'" />
           <MyPosts v-if="activeTab === 'myposts'" />
           <Favorites v-if="activeTab === 'favorites'" />
+          <UserProfile v-if="activeTab === 'profile'" />
         </div>
       </div>
     </el-main>
 
     <!-- 页脚 -->
-   <el-footer class="footer">
-  © 2025 校园二手交易平台 |
-  <a href="https://github.com/skyloveljf/school_transaction_system" target="_blank">关于我们</a> |
-  <a href="mailto:codingsky899@gmail.com" target="_blank">联系方式</a>
-</el-footer>
-
+    <el-footer class="footer">
+      © 2025 校园二手交易平台 |
+      <a href="https://github.com/skyloveljf/school_transaction_system" target="_blank">关于我们</a> |
+      <a href="mailto:codingsky899@gmail.com" target="_blank">联系方式</a>
+    </el-footer>
   </div>
 </template>
 
@@ -64,8 +70,9 @@ import { useRouter } from 'vue-router'
 import BrowseProducts from '../components/BrowseProducts.vue'
 import MyPosts from '../components/MyPosts.vue'
 import Favorites from '../components/Favorites.vue'
+import UserProfile from '../components/UserProfile.vue'
 
-import { ShoppingCart, Edit, Star } from '@element-plus/icons-vue'
+import { ShoppingCart, Edit, Star, User } from '@element-plus/icons-vue'
 
 const activeTab = ref('browse')
 const router = useRouter()
