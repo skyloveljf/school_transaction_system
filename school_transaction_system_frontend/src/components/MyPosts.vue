@@ -2,11 +2,20 @@
   <div class="my-posts">
     <template v-if="mode === 'list'">
       <h3>我的发布</h3>
-      <el-button type="primary" @click="switchToAdd" style="margin-bottom: 16px;">发布新商品</el-button>
+      <el-button type="primary" @click="switchToAdd" class="add-btn">发布新商品</el-button>
 
-      <el-table :data="posts" style="width: 100%">
+      <el-table :data="posts" class="posts-table" stripe border>
+        <el-table-column prop="image" label="图片" width="120">
+          <template #default="scope">
+            <img :src="scope.row.image" alt="商品图片" class="table-img" />
+          </template>
+        </el-table-column>
         <el-table-column prop="title" label="商品名称" />
-        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="price" label="价格" width="100">
+          <template #default="scope">
+            <span class="price">￥{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180">
           <template #default="scope">
             <el-button size="small" type="primary" @click="switchToEdit(scope.row)">编辑</el-button>
@@ -17,7 +26,7 @@
     </template>
 
     <template v-else>
-      <el-button type="text" @click="mode = 'list'">&lt; 返回我的发布</el-button>
+      <el-button type="text" @click="mode = 'list'" class="back-link">&lt; 返回我的发布</el-button>
       <h3 v-if="mode === 'add'">发布新商品</h3>
       <h3 v-else>编辑商品</h3>
 
@@ -78,7 +87,7 @@
         </el-form-item>
 
         <el-form-item class="btn-group">
-          <el-button type="primary" @click="submitForm" size="medium">
+          <el-button type="primary" @click="submitForm" size="medium" class="submit-btn">
             {{ mode === 'add' ? '发布' : '保存' }}
           </el-button>
           <el-button @click="cancelForm" size="medium" plain>取消</el-button>
@@ -233,33 +242,116 @@ const handleUploadError = () => {
 
 <style scoped>
 .my-posts {
-  padding: 20px;
+  padding: 32px 0 0 0;
+  min-height: 480px;
+  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #c7d2fe33;
+  margin-bottom: 24px;
+  animation: fadeInPosts 0.8s;
+}
+@keyframes fadeInPosts {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: none;}
+}
+h3 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px #e0e7ff44;
+}
+.add-btn {
+  display: block;
+  margin: 0 auto 18px auto;
+  font-weight: 600;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
+  border: none;
+  color: #6366f1;
+  transition: background 0.2s;
+}
+.add-btn:hover {
+  background: linear-gradient(90deg, #6366f1 0%, #a1c4fd 100%);
+  color: #fff;
+}
+.posts-table {
+  background: rgba(255,255,255,0.98);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #a1c4fd22;
+  margin-bottom: 24px;
+}
+.table-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid #e0e7ff;
+  box-shadow: 0 1px 6px #e0e7ff33;
+}
+.price {
+  color: #f56c6c;
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+.back-link {
+  margin-bottom: 18px;
+  color: #6366f1;
+  font-size: 1rem;
+  font-weight: 600;
 }
 .form-container {
   max-width: 600px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.98);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #a1c4fd22;
+  padding: 32px 28px 18px 28px;
   margin-top: 20px;
 }
 .btn-group {
   text-align: center;
   margin-top: 20px;
 }
+.submit-btn {
+  font-weight: 700;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
+  border: none;
+  color: #6366f1;
+  transition: background 0.2s;
+}
+.submit-btn:hover {
+  background: linear-gradient(90deg, #6366f1 0%, #a1c4fd 100%);
+  color: #fff;
+}
 .upload-demo {
   width: 100%;
   border: 2px dashed #d9d9d9;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   text-align: center;
   padding: 30px 0;
   color: #909399;
   font-size: 14px;
+  background: #f8fafc;
+  transition: border-color 0.2s;
+}
+.upload-demo:hover {
+  border-color: #a1c4fd;
 }
 .image-preview {
   margin-top: 10px;
+  text-align: left;
 }
 .image-preview img {
-  max-width: 200px;
-  max-height: 150px;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
+  max-width: 180px;
+  max-height: 120px;
+  border-radius: 8px;
+  border: 1.5px solid #e0e7ff;
+  box-shadow: 0 1px 6px #e0e7ff33;
 }
 </style>

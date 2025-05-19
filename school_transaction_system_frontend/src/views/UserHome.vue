@@ -105,25 +105,35 @@ const getCurrentTabComponent = computed(() => {
 
 <style scoped>
 .user-home {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #e0f7fa, #ffffff);
+  background: linear-gradient(135deg, #e0f7fa 0%, #fbc2eb 100%);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
+  animation: fadeInBg 1.2s;
+}
+@keyframes fadeInBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .header {
-  height: 64px;
-  background: linear-gradient(90deg, #3a8ee6, #5ba5f7);
+  height: 68px;
+  background: linear-gradient(90deg, #3a8ee6 0%, #a1c4fd 100%);
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
+  padding: 0 38px;
   font-size: 20px;
-  box-shadow: 0 4px 12px rgb(58 142 230 / 0.4);
+  box-shadow: 0 4px 18px rgb(58 142 230 / 0.18);
   font-weight: 600;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .left-section {
@@ -137,9 +147,11 @@ const getCurrentTabComponent = computed(() => {
 }
 
 .logo {
-  font-weight: 700;
-  font-size: 22px;
+  font-weight: 800;
+  font-size: 24px;
   user-select: none;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px #a1c4fd66;
 }
 
 /* 顶部按钮悬浮动画 */
@@ -147,13 +159,17 @@ const getCurrentTabComponent = computed(() => {
   position: relative;
   margin-right: 20px;
   color: white;
-  font-size: 20px;
-  transition: color 0.3s ease, transform 0.3s ease;
+  font-size: 22px;
+  transition: color 0.3s, transform 0.3s;
   cursor: pointer;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  padding: 6px 10px;
 }
 .message-btn:hover {
   color: #66b1ff;
-  transform: scale(1.15);
+  background: rgba(255,255,255,0.18);
+  transform: scale(1.18);
 }
 
 /* 未读红点位置 */
@@ -168,13 +184,14 @@ const getCurrentTabComponent = computed(() => {
 .avatar {
   margin-right: 12px;
   cursor: pointer;
-  border: 2px solid white;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
   will-change: transform;
+  box-shadow: 0 2px 8px #a1c4fd55;
 }
 .avatar:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.5);
+  transform: scale(1.12);
+  box-shadow: 0 6px 18px #a1c4fd99;
 }
 
 .welcome {
@@ -183,25 +200,34 @@ const getCurrentTabComponent = computed(() => {
   color: #f0f5ff;
   margin-right: 20px;
   user-select: none;
+  text-shadow: 0 1px 4px #3a8ee655;
 }
 
 /* 退出按钮点击缩放 */
 .logout-btn {
   border-radius: 20px;
-  padding: 6px 20px;
-  font-weight: 600;
-  transition: transform 0.2s ease;
+  padding: 7px 24px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: transform 0.2s, background 0.2s;
   cursor: pointer;
+  background: linear-gradient(90deg, #a1c4fd 0%, #3a8ee6 100%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px #a1c4fd44;
+}
+.logout-btn:hover {
+  background: linear-gradient(90deg, #3a8ee6 0%, #a1c4fd 100%);
 }
 .logout-btn:active {
-  transform: scale(0.9);
+  transform: scale(0.93);
 }
 
 /* 主体内容 */
 .el-main {
   flex: 1;
-  padding: 50px 40px 60px;
-  background-color: #f9fbfd;
+  padding: 56px 0 60px;
+  background: transparent;
   overflow-y: auto;
 }
 
@@ -211,44 +237,55 @@ const getCurrentTabComponent = computed(() => {
 }
 
 .custom-tabs {
-  margin-bottom: 25px;
-  font-weight: 600;
+  margin-bottom: 28px;
+  font-weight: 700;
   --el-tabs-bar-color: #409eff;
   --el-tabs-text-color: #606266;
   --el-tabs-text-color-active: #409eff;
+  --el-tabs-header-height: 48px;
+  --el-tabs-active-bar-height: 4px;
 }
 
 .tab-content {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgb(0 0 0 / 0.06);
-  padding: 30px 30px 40px;
-  min-height: 400px;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background: rgba(255,255,255,0.98);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgb(99 102 241 / 0.10);
+  padding: 36px 36px 44px;
+  min-height: 420px;
+  transition: box-shadow 0.3s, transform 0.3s;
   will-change: transform;
+  animation: cardPop 0.7s;
+}
+@keyframes cardPop {
+  from { transform: scale(0.97);}
+  to { transform: scale(1);}
 }
 .tab-content:hover {
-  box-shadow: 0 14px 30px rgb(0 0 0 / 0.12);
-  transform: translateY(-8px);
+  box-shadow: 0 14px 36px rgb(99 102 241 / 0.18);
+  transform: translateY(-8px) scale(1.01);
 }
 
 /* 页脚 */
 .footer {
   height: 60px;
-  background-color: #f0f3fa;
+  background: linear-gradient(90deg, #f0f3fa 0%, #e0e7ff 100%);
   color: #8c98a4;
   text-align: center;
   line-height: 60px;
-  font-size: 14px;
+  font-size: 15px;
   border-top: 1px solid #d8dde6;
   user-select: none;
+  letter-spacing: 1px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -2px 8px #e0e7ff44;
 }
 
 .footer a {
   color: #409eff;
   margin: 0 12px;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.3s;
 }
 .footer a:hover {
   color: #66b1ff;
@@ -258,22 +295,22 @@ const getCurrentTabComponent = computed(() => {
 /* Tab 切换动画 */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-  transition: all 0.4s ease;
+  transition: all 0.4s cubic-bezier(.55,0,.1,1);
 }
 .fade-slide-enter-from {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(30px) scale(0.98);
 }
 .fade-slide-enter-to {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 .fade-slide-leave-from {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 .fade-slide-leave-to {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-30px) scale(0.98);
 }
 </style>
