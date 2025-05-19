@@ -150,8 +150,15 @@ const submitComment = () => {
 }
 
 const handleMessage = () => {
-  ElMessage.info('已发起与卖家的私信功能')
+  router.push({
+    path: '/chat',
+    query: {
+      userId: product.value.sellerId || 2,
+      username: product.value.sellerName || '卖家'
+    }
+  })
 }
+
 
 // 返回首页方法
 const goHome = () => {

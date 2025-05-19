@@ -7,20 +7,25 @@
       </div>
 
       <div class="right-section">
+        <el-button type="text" @click="goToMessages" class="message-btn" aria-label="私信">
+          <el-icon><ChatDotRound /></el-icon>
+          <el-badge is-dot v-if="unreadCount > 0" class="badge"></el-badge>
+        </el-button>
+
         <el-avatar
-          :size="32"
+          :size="36"
           src="https://img.keaitupian.cn/uploads/upimg/1597372353577123.jpg"
-          style="margin-right: 10px"
+          class="avatar"
         />
-        <span class="welcome">欢迎，codingsky</span>
-        <el-button type="danger" plain @click="logout" style="margin-left: 20px;">退出登录</el-button>
+        <span class="welcome">欢迎，condingsky</span>
+        <el-button type="primary" plain @click="logout" class="logout-btn">退出登录</el-button>
       </div>
     </el-header>
 
     <!-- 主体内容 -->
     <el-main>
       <div class="tab-container">
-        <el-tabs v-model="activeTab" type="card" class="custom-tabs">
+        <el-tabs v-model="activeTab" type="line" class="custom-tabs" stretch>
           <el-tab-pane name="browse">
             <template #label>
               <el-icon><ShoppingCart /></el-icon> 商品浏览
@@ -46,12 +51,9 @@
           </el-tab-pane>
         </el-tabs>
 
-        <div class="tab-content card">
-          <BrowseProducts v-if="activeTab === 'browse'" />
-          <MyPosts v-if="activeTab === 'myposts'" />
-          <Favorites v-if="activeTab === 'favorites'" />
-          <UserProfile v-if="activeTab === 'profile'" />
-        </div>
+        <transition name="fade-slide" mode="out-in">
+          <component :is="getCurrentTabComponent" :key="activeTab" class="tab-content card" />
+        </transition>
       </div>
     </el-main>
 
@@ -65,21 +67,40 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+
 import BrowseProducts from '../components/BrowseProducts.vue'
 import MyPosts from '../components/MyPosts.vue'
 import Favorites from '../components/Favorites.vue'
 import UserProfile from '../components/UserProfile.vue'
 
-import { ShoppingCart, Edit, Star, User } from '@element-plus/icons-vue'
+import { ShoppingCart, Edit, Star, User, ChatDotRound } from '@element-plus/icons-vue'
 
 const activeTab = ref('browse')
+const unreadCount = ref(2) // 模拟未读消息数，真实应从后端接口获取
 const router = useRouter()
 
 const logout = () => {
   router.push('/')
 }
+const goToMessages = () => {
+  router.push('/messages')
+}
+
+// 计算当前选中 tab 的组件
+const getCurrentTabComponent = computed(() => {
+  switch (activeTab.value) {
+    case 'browse':
+      return BrowseProducts
+    case 'myposts':
+      return MyPosts
+    case 'favorites':
+      return Favorites
+    case 'profile':
+      return UserProfile
+  }
+})
 </script>
 
 <style scoped>
@@ -88,18 +109,21 @@ const logout = () => {
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #e0f7fa, #ffffff);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
 }
 
 .header {
   height: 64px;
-  background: linear-gradient(90deg, #409EFF, #66b1ff);
+  background: linear-gradient(90deg, #3a8ee6, #5ba5f7);
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
-  font-size: 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0 30px;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgb(58 142 230 / 0.4);
+  font-weight: 600;
 }
 
 .left-section {
@@ -113,56 +137,143 @@ const logout = () => {
 }
 
 .logo {
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 22px;
+  user-select: none;
+}
+
+/* 顶部按钮悬浮动画 */
+.message-btn {
+  position: relative;
+  margin-right: 20px;
+  color: white;
   font-size: 20px;
-  font-family: 'Segoe UI', sans-serif;
+  transition: color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.message-btn:hover {
+  color: #66b1ff;
+  transform: scale(1.15);
+}
+
+/* 未读红点位置 */
+.badge {
+  position: absolute !important;
+  top: 4px;
+  right: 4px;
+  pointer-events: none;
+}
+
+/* 头像悬浮动画 */
+.avatar {
+  margin-right: 12px;
+  cursor: pointer;
+  border: 2px solid white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
+}
+.avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.5);
 }
 
 .welcome {
-  font-size: 16px;
-  margin-left: 5px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #f0f5ff;
+  margin-right: 20px;
+  user-select: none;
 }
 
+/* 退出按钮点击缩放 */
+.logout-btn {
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+.logout-btn:active {
+  transform: scale(0.9);
+}
+
+/* 主体内容 */
 .el-main {
   flex: 1;
-  padding: 40px 60px;
+  padding: 50px 40px 60px;
+  background-color: #f9fbfd;
+  overflow-y: auto;
 }
 
 .tab-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 .custom-tabs {
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: center;
+  margin-bottom: 25px;
+  font-weight: 600;
+  --el-tabs-bar-color: #409eff;
+  --el-tabs-text-color: #606266;
+  --el-tabs-text-color-active: #409eff;
 }
 
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 30px;
+.tab-content {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.06);
+  padding: 30px 30px 40px;
+  min-height: 400px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  will-change: transform;
+}
+.tab-content:hover {
+  box-shadow: 0 14px 30px rgb(0 0 0 / 0.12);
+  transform: translateY(-8px);
 }
 
+/* 页脚 */
 .footer {
   height: 60px;
-  background-color: #f2f6fc;
-  color: #666;
+  background-color: #f0f3fa;
+  color: #8c98a4;
   text-align: center;
   line-height: 60px;
   font-size: 14px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #d8dde6;
+  user-select: none;
 }
 
 .footer a {
-  color: #409EFF;
-  margin: 0 10px;
+  color: #409eff;
+  margin: 0 12px;
   text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer a:hover {
+  color: #66b1ff;
+  text-decoration: underline;
 }
 
-.footer a:hover {
-  text-decoration: underline;
+/* Tab 切换动画 */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.fade-slide-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 </style>
