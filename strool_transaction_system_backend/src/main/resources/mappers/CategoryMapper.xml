@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yourproject.mapper.CategoryMapper">
+
+    <sql id="categoryColumns">
+        category_id, category_name, description
+    </sql>
+
+    <resultMap id="CategoryResultMap" type="com.example.yourproject.model.Category">
+        <id property="categoryId" column="category_id" javaType="java.lang.Long"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <select id="findById" resultMap="CategoryResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="categoryColumns" />
+        FROM STS_DB.CATEGORIES
+        WHERE category_id = #{categoryId}
+    </select>
+
+    <select id="findByName" resultMap="CategoryResultMap" parameterType="java.lang.String">
+        SELECT <include refid="categoryColumns" />
+        FROM STS_DB.CATEGORIES
+        WHERE category_name = #{categoryName}
+    </select>
+
+    <select id="findAll" resultMap="CategoryResultMap">
+        SELECT <include refid="categoryColumns" />
+        FROM STS_DB.CATEGORIES
+        ORDER BY category_id ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="categoryId" keyColumn="category_id" parameterType="com.example.yourproject.model.Category">
+        INSERT INTO STS_DB.CATEGORIES (category_name, description)
+        VALUES (#{categoryName}, #{description})
+    </insert>
+
+    <update id="update" parameterType="com.example.yourproject.model.Category">
+        UPDATE STS_DB.CATEGORIES
+        <set>
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="description != null">description = #{description},</if> <!-- 允许清空描述 -->
+        </set>
+        WHERE STS_DB = #{categoryId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM STS_DB.CATEGORIES WHERE category_id = #{categoryId}
+    </delete>
+
+</mapper>

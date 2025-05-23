@@ -1,42 +1,49 @@
 <template>
   <div class="detail-container">
-    <el-card v-loading="loading" class="detail-card">
+    <el-card v-loading="loadingProduct || loadingFavoriteStatus" class="detail-card">
       <!-- 返回主页按钮 -->
-      <el-button type="primary" plain @click="goHome" class="back-btn">
+      <el-button type="primary" plain @click="goHome" style="margin-bottom: 20px;">
         返回主页
       </el-button>
 
       <!-- 商品信息 -->
       <div v-if="product" class="top-section">
-        <div class="img-wrapper">
-          <img :src="product.image" class="product-image" alt="商品图片" />
-        </div>
+        <img :src="getImageUrl(product.imageUrl)" class="product-image" alt="商品图片" />
         <div class="info-section">
-          <h2 class="product-title">{{ product.title }}</h2>
+          <h2>{{ product.title }}</h2>
           <p class="desc">{{ product.description }}</p>
           <p class="price">￥{{ product.price }}</p>
-          <div class="btn-group">
-            <el-button type="success" @click="handleMessage">私信卖家</el-button>
-            <el-button
-              :type="isFavorited ? 'warning' : 'primary'"
-              @click="toggleFavorite"
-              class="fav-btn"
-            >
-              {{ isFavorited ? '取消收藏' : '收藏商品' }}
-            </el-button>
-          </div>
+          <p v-if="product.sellerUsername">卖家: {{ product.sellerUsername }}</p>
+          <p v-if="product.categoryName">分类: {{ product.categoryName }}</p>
+          <p>浏览量: {{ product.views }}</p>
+
+          <el-button type="success" @click="handleMessageSeller">私信卖家</el-button>
+
+          <el-button
+            :type="isFavorited ? 'warning' : 'primary'"
+            :loading="togglingFavorite"
+            @click="toggleFavoriteAction"
+            style="margin-left: 12px;"
+          >
+            {{ isFavorited ? '取消收藏' : '收藏商品' }}
+          </el-button>
         </div>
       </div>
 
-      <div v-else class="not-found">
-        <el-empty description="未找到该商品" />
+      <div v-else-if="!loadingProduct && productFetchError" class="error-state">
+        <el-alert title="加载商品失败" type="error" :description="productFetchError" show-icon :closable="false" />
+        <el-button @click="goHome" style="margin-top: 15px;">返回首页</el-button>
+      </div>
+
+      <div v-else-if="!loadingProduct && !product" class="not-found">
+        <el-empty description="未找到该商品或商品已下架" />
         <el-button @click="goHome">返回首页</el-button>
       </div>
 
       <!-- 评论区 -->
       <el-divider v-if="product">用户评论</el-divider>
 
-      <div v-if="product" class="comment-section">
+      <div v-if="product" class="comment-section" v-loading="loadingComments">
         <el-form @submit.prevent="submitComment" class="comment-form">
           <el-form-item>
             <el-input
@@ -44,331 +51,460 @@
               type="textarea"
               placeholder="写下你的评论..."
               :rows="3"
-              maxlength="200"
-              show-word-limit
             />
           </el-form-item>
-          <el-button type="primary" @click="submitComment" class="comment-btn">提交评论</el-button>
+          <el-button type="primary" :loading="submittingComment" @click="submitComment">提交评论</el-button>
         </el-form>
 
         <div class="comments">
-          <transition-group name="fade-list" tag="div">
-            <div v-for="comment in comments" :key="comment.id" class="comment-item">
-              <div class="comment-header">
-                <el-avatar
-                  :size="28"
-                  src="https://img.icons8.com/color/48/user-male-circle--v2.png"
-                  class="comment-avatar"
-                />
-                <strong class="comment-username">{{ comment.username }}</strong>
-                <span class="date">{{ formatDate(comment.createdAt) }}</span>
-              </div>
-              <p class="comment-content">{{ comment.content }}</p>
+          <div v-for="comment in comments" :key="comment.id" class="comment-item">
+            <div class="comment-header">
+              <strong>{{ comment.username }}</strong>
+              <span class="date">{{ formatDate(comment.createdTime) }}</span>
+              <el-button 
+                v-if="isCurrentUserComment(comment)" 
+                type="danger" 
+                size="small" 
+                @click="deleteComment(comment.id)"
+                :loading="deletingComment === comment.id"
+                style="margin-left: 10px;"
+              >
+                删除
+              </el-button>
             </div>
-          </transition-group>
+            <p>{{ comment.content }}</p>
+            
+            <!-- 回复区域 -->
+            <div class="replies" v-if="comment.replies && comment.replies.length > 0">
+              <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">
+                <div class="comment-header">
+                  <strong>{{ reply.username }}</strong>
+                  <span class="date">{{ formatDate(reply.createdTime) }}</span>
+                  <el-button 
+                    v-if="isCurrentUserComment(reply)" 
+                    type="danger" 
+                    size="small" 
+                    @click="deleteComment(reply.id)"
+                    :loading="deletingComment === reply.id"
+                    style="margin-left: 10px;"
+                  >
+                    删除
+                  </el-button>
+                </div>
+                <p>{{ reply.content }}</p>
+              </div>
+            </div>
+            
+            <!-- 回复表单 -->
+            <div v-if="replyingTo === comment.id" class="reply-form">
+              <el-input
+                v-model="replyForm.content"
+                type="textarea"
+                placeholder="回复评论..."
+                :rows="2"
+                size="small"
+              />
+              <div class="reply-actions">
+                <el-button type="primary" size="small" @click="submitReply(comment.id)" :loading="submittingReply">回复</el-button>
+                <el-button size="small" @click="cancelReply">取消</el-button>
+              </div>
+            </div>
+            <el-button v-else type="text" @click="startReply(comment.id)">回复</el-button>
+          </div>
+          <el-empty v-if="!loadingComments && comments.length === 0" description="暂无评论" />
         </div>
       </div>
     </el-card>
+
+    <!-- 聊天对话框 -->
+    <ChatDialog
+      v-if="showChatDialog"
+      :userId="chatUserId"
+      :username="chatUsername"
+      :show="showChatDialog"
+      @update:show="showChatDialog = $event"
+      @close="showChatDialog = false"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
+
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { mockProducts, mockComments } from '../api/product'
+import { ElMessage, ElAlert, ElSkeleton, ElInput, ElButton, ElIcon, ElEmpty, ElDivider, ElCard } from 'element-plus'
+import { getProductByIdApi } from '../api/product'
+import { isProductFavoritedApi, addFavoriteApi, removeFavoriteByProductIdApi } from '../api/favorite'
+import { getProductCommentsApi, addCommentApi, deleteCommentApi } from '../api/comment'
+import { getImageUrl } from '../utils/imageHelper'
+import ChatDialog from '../components/ChatDialog.vue'
+import authService from '../services/authService'
 
 const route = useRoute()
 const router = useRouter()
-const loading = ref(false)
+
 const product = ref(null)
+const loadingProduct = ref(false)
+const productFetchError = ref(null)
+
 const comments = ref([])
+const loadingComments = ref(false)
+const submittingComment = ref(false)
+const submittingReply = ref(false)
+const deletingComment = ref(null) // 存储正在删除的评论ID
 
 const commentForm = ref({
   content: ''
 })
 
-const favorites = ref([])
+const replyForm = ref({
+  content: ''
+})
+const replyingTo = ref(null) // 存储正在回复的评论ID
+
 const isFavorited = ref(false)
+const loadingFavoriteStatus = ref(false)
+const togglingFavorite = ref(false)
 
-const loadFavorites = () => {
-  favorites.value = JSON.parse(localStorage.getItem('favorites') || '[]')
-  isFavorited.value = product.value && favorites.value.some(item => item.id === product.value.id)
-}
+const productId = Number(route.params.id)
 
-const saveFavorites = () => {
-  localStorage.setItem('favorites', JSON.stringify(favorites.value))
-}
+// 控制聊天对话框显示
+const showChatDialog = ref(false)
+const chatUserId = ref(null)
+const chatUsername = ref('')
 
-const toggleFavorite = () => {
-  if (!product.value) return
-
-  if (isFavorited.value) {
-    favorites.value = favorites.value.filter(item => item.id !== product.value.id)
-    ElMessage.success('已取消收藏')
-  } else {
-    favorites.value.push(product.value)
-    ElMessage.success('已收藏该商品')
+const fetchProductDetails = async () => {
+  if (!productId) {
+    productFetchError.value = '无效的商品ID'
+    return
   }
-  isFavorited.value = !isFavorited.value
-  saveFavorites()
-}
-
-const loadProduct = async () => {
-  loading.value = true
+  loadingProduct.value = true
+  productFetchError.value = null
   try {
-    const id = parseInt(route.params.id)
-    product.value = mockProducts.find(p => p.id === id) || null
-
-    if (product.value) {
-      comments.value = mockComments.filter(c => c.productId === id)
-    }
-  } catch (error) {
-    ElMessage.error('加载商品信息失败')
+    const data = await getProductByIdApi(productId)
+    product.value = data
+  } catch (err) {
+    console.error("Failed to fetch product details:", err)
+    productFetchError.value = err.message || '加载商品信息失败'
+    ElMessage.error(productFetchError.value)
   } finally {
-    loading.value = false
+    loadingProduct.value = false
   }
 }
 
-watch(product, (newVal) => {
-  if (newVal) {
-    loadFavorites()
+const checkFavoriteStatus = async () => {
+  if (!product.value || !authService.isLoggedIn()) return
+  loadingFavoriteStatus.value = true
+  try {
+    isFavorited.value = await isProductFavoritedApi(product.value.productId)
+  } catch (err) {
+    console.error("Failed to check favorite status:", err)
+  } finally {
+    loadingFavoriteStatus.value = false
+  }
+}
+
+const toggleFavoriteAction = async () => {
+  if (!product.value || !authService.isLoggedIn()) {
+    ElMessage.warning('请先登录后再操作')
+    return
+  }
+  togglingFavorite.value = true
+  try {
+    if (isFavorited.value) {
+      await removeFavoriteByProductIdApi(product.value.productId)
+      ElMessage.success('已取消收藏')
+      isFavorited.value = false
+    } else {
+      await addFavoriteApi(product.value.productId)
+      ElMessage.success('商品已收藏')
+      isFavorited.value = true
+    }
+  } catch (err) {
+    console.error("Toggle favorite action failed:", err)
+    ElMessage.error(err.message || '操作失败，请重试')
+  } finally {
+    togglingFavorite.value = false
+  }
+}
+
+const fetchComments = async () => {
+  if (!productId) return
+  
+  loadingComments.value = true
+  try {
+    comments.value = await getProductCommentsApi(productId)
+  } catch (err) {
+    console.error("Failed to fetch comments:", err)
+    ElMessage.error('加载评论失败: ' + (err.message || '未知错误'))
+  } finally {
+    loadingComments.value = false
+  }
+}
+
+watch(product, (newProduct) => {
+  if (newProduct) {
+    checkFavoriteStatus()
+    fetchComments()
   }
 })
 
 onMounted(() => {
-  loadProduct()
+  fetchProductDetails()
 })
 
-const submitComment = () => {
+const submitComment = async () => {
   if (!commentForm.value.content.trim()) {
     ElMessage.warning('请输入评论内容')
     return
   }
-
-  const newComment = {
-    id: Date.now(),
-    productId: product.value.id,
-    userId: 1,
-    username: '当前用户',
-    content: commentForm.value.content,
-    createdAt: new Date().toISOString()
+  
+  if (!authService.isLoggedIn()) {
+    ElMessage.warning('请先登录后再评论')
+    return
   }
 
-  comments.value.unshift(newComment)
-  commentForm.value.content = ''
-  ElMessage.success('评论已提交')
-}
-
-const handleMessage = () => {
-  router.push({
-    path: '/chat',
-    query: {
-      userId: product.value.sellerId || 2,
-      username: product.value.sellerName || '卖家'
+  submittingComment.value = true
+  try {
+    const commentData = {
+      productId: product.value.productId,
+      content: commentForm.value.content
     }
-  })
+    
+    await addCommentApi(commentData)
+    ElMessage.success('评论已提交')
+    commentForm.value.content = ''
+    // 重新获取评论列表
+    await fetchComments()
+  } catch (err) {
+    ElMessage.error(err.message || '评论提交失败')
+  } finally {
+    submittingComment.value = false
+  }
 }
 
-// 返回首页方法
+const startReply = (commentId) => {
+  replyingTo.value = commentId
+  replyForm.value.content = ''
+}
+
+const cancelReply = () => {
+  replyingTo.value = null
+  replyForm.value.content = ''
+}
+
+const submitReply = async (parentId) => {
+  if (!replyForm.value.content.trim()) {
+    ElMessage.warning('请输入回复内容')
+    return
+  }
+  
+  if (!authService.isLoggedIn()) {
+    ElMessage.warning('请先登录后再回复')
+    return
+  }
+
+  submittingReply.value = true
+  try {
+    const replyData = {
+      productId: product.value.productId,
+      content: replyForm.value.content,
+      parentId: parentId
+    }
+    
+    await addCommentApi(replyData)
+    ElMessage.success('回复已提交')
+    replyForm.value.content = ''
+    replyingTo.value = null
+    // 重新获取评论列表
+    await fetchComments()
+  } catch (err) {
+    ElMessage.error(err.message || '回复提交失败')
+  } finally {
+    submittingReply.value = false
+  }
+}
+
+const deleteComment = async (commentId) => {
+  if (!authService.isLoggedIn()) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  deletingComment.value = commentId
+  try {
+    await deleteCommentApi(commentId)
+    ElMessage.success('评论已删除')
+    // 重新获取评论列表
+    await fetchComments()
+  } catch (err) {
+    ElMessage.error(err.message || '删除评论失败')
+  } finally {
+    deletingComment.value = null
+  }
+}
+
+const isCurrentUserComment = (comment) => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  return currentUser && currentUser.userId === comment.userId
+}
+
+const handleMessageSeller = () => {
+  if (!product.value || !product.value.sellerId) {
+    ElMessage.error('无法获取卖家信息')
+    return
+  }
+  
+  // 检查用户是否已登录
+  if (!authService.isLoggedIn()) {
+    ElMessage.warning('请先登录后再发送私信')
+    return
+  }
+  
+  // 检查是否是自己的商品
+  const userProfileString = localStorage.getItem('userProfileDto')
+  if (userProfileString) {
+    try {
+      const userProfile = JSON.parse(userProfileString)
+      if (userProfile && userProfile.userId === product.value.sellerId) {
+        ElMessage.warning('不能给自己发送私信')
+        return
+      }
+    } catch (e) {
+      console.error('解析用户信息失败:', e)
+    }
+  }
+  
+  console.log('准备与卖家聊天:', {
+    sellerId: product.value.sellerId,
+    sellerName: product.value.sellerUsername || '卖家'
+  })
+  
+  // 设置聊天对话框参数并显示
+  chatUserId.value = product.value.sellerId
+  chatUsername.value = product.value.sellerUsername || '卖家'
+  showChatDialog.value = true
+}
+
 const goHome = () => {
   router.push('/userhome')
 }
 
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString()
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 </script>
 
 <style scoped>
 .detail-container {
   max-width: 1000px;
-  margin: 0 auto;
-  padding: 32px 0 24px 0;
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
-  border-radius: 22px;
-  box-shadow: 0 8px 32px #c7d2fe33;
-  min-height: 600px;
-  animation: fadeInDetail 0.8s;
-}
-@keyframes fadeInDetail {
-  from { opacity: 0; transform: translateY(30px);}
-  to { opacity: 1; transform: none;}
-}
-.detail-card {
-  padding: 32px 32px 24px 32px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.98);
-  box-shadow: 0 4px 24px #a1c4fd33;
-  border: 1.5px solid #e0e7ff;
+  margin: 20px auto;
+  padding: 20px;
 }
 
-.back-btn {
-  margin-bottom: 20px;
-  border-radius: 18px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
-  border: none;
-  color: #6366f1;
-  transition: background 0.2s;
-}
-.back-btn:hover {
-  background: linear-gradient(90deg, #6366f1 0%, #a1c4fd 100%);
-  color: #fff;
+.detail-card {
+  padding: 20px;
 }
 
 .top-section {
   display: flex;
-  gap: 36px;
-  margin-bottom: 28px;
-  align-items: flex-start;
-}
-
-.img-wrapper {
-  flex-shrink: 0;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
-  border-radius: 14px;
-  box-shadow: 0 2px 12px #a1c4fd33;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
 }
 
 .product-image {
   width: 300px;
   height: 300px;
   object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px #e0e7ff55;
-  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
 }
 
 .info-section {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
 }
 
-.product-title {
-  font-size: 2.1rem;
-  font-weight: 800;
-  color: #6366f1;
-  margin-bottom: 12px;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 8px #e0e7ff44;
+.info-section h2 {
+  margin-top: 0;
 }
 
 .desc {
-  font-size: 1.1rem;
-  color: #6b7280;
-  margin-bottom: 18px;
-  line-height: 1.7;
+  color: #606266;
+  margin-bottom: 15px;
 }
 
 .price {
   color: #f56c6c;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: bold;
-  margin: 18px 0 24px 0;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 8px #fbc2eb33;
+  margin: 15px 0;
 }
 
-.btn-group {
-  display: flex;
-  gap: 16px;
+.info-section p {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 8px;
 }
 
-.fav-btn {
-  font-weight: 600;
-  border-radius: 10px;
-}
-
-.not-found {
+.not-found, .error-state {
   text-align: center;
   padding: 40px 0;
 }
 
 .comment-section {
-  margin-top: 36px;
-  background: rgba(246,248,255,0.7);
-  border-radius: 14px;
-  padding: 24px 18px 8px 18px;
-  box-shadow: 0 2px 12px #e0e7ff22;
+  margin-top: 30px;
 }
 
 .comment-form {
-  margin-bottom: 30px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-}
-
-.comment-btn {
-  border-radius: 8px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
-  border: none;
-  color: #6366f1;
-  transition: background 0.2s;
-}
-.comment-btn:hover {
-  background: linear-gradient(90deg, #6366f1 0%, #a1c4fd 100%);
-  color: #fff;
-}
-
-.comments {
-  margin-top: 10px;
-}
-
-.fade-list-enter-active, .fade-list-leave-active {
-  transition: all 0.4s cubic-bezier(.55,0,.1,1);
-}
-.fade-list-enter-from, .fade-list-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-.fade-list-leave-from, .fade-list-enter-to {
-  opacity: 1;
-  transform: translateY(0);
+  margin-bottom: 20px;
 }
 
 .comment-item {
-  padding: 18px 0 10px 0;
-  border-bottom: 1px solid #e0e7ff;
-  transition: background 0.2s;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
+
 .comment-item:last-child {
   border-bottom: none;
 }
+
 .comment-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
-.comment-avatar {
-  background: #eef2ff;
-  border: 1.5px solid #e0e7ff;
-}
-.comment-username {
-  color: #6366f1;
+
+.comment-header strong {
   font-weight: 600;
-  font-size: 1rem;
 }
+
 .date {
-  color: #999;
+  color: #909399;
   font-size: 12px;
-  margin-left: auto;
+  margin-left: 10px;
 }
-.comment-content {
-  color: #444;
-  font-size: 1.05rem;
-  line-height: 1.7;
-  word-break: break-all;
-  margin-left: 38px;
+
+.replies {
+  margin-left: 20px;
+  margin-top: 10px;
+  padding-left: 15px;
+  border-left: 2px solid #f0f0f0;
+}
+
+.reply-item {
+  padding: 10px 0;
+}
+
+.reply-form {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.reply-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
 }
 </style>

@@ -1,10 +1,30 @@
 <template>
   <div class="browse-products">
     <h3>商品浏览区</h3>
-    <div class="product-list">
+    <el-input
+      v-model="searchKeyword"
+      placeholder="搜索商品..."
+      @keyup.enter="fetchProducts"
+      clearable
+      style="margin-bottom: 20px; max-width: 400px;"
+    >
+      <template #append>
+        <el-button @click="fetchProducts"><el-icon><Search /></el-icon></el-button>
+      </template>
+    </el-input>
+    <div v-if="loading" class="loading-state">
+      <el-skeleton :rows="5" animated />
+    </div>
+    <div v-else-if="error" class="error-state">
+      <el-alert title="加载商品失败" type="error" :description="error" show-icon :closable="false" />
+    </div>
+    <div v-else-if="products.length === 0" class="empty-state">
+      <el-empty description="暂无商品" />
+    </div>
+    <div v-else class="product-list">
       <ProductCard
         v-for="item in products"
-        :key="item.id"
+        :key="item.productId" 
         :product="item"
         @view="goToDetail"
       />
@@ -13,61 +33,64 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { mockProducts } from '../api/product'
-import ProductCard from '../components/ProductCard.vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { getAllProductsApi } from '../api/product';
+import ProductCard from '../components/ProductCard.vue';
+import { ElMessage, ElAlert, ElSkeleton, ElInput, ElButton, ElIcon, ElEmpty } from 'element-plus';
+import { Search } from '@element-plus/icons-vue';
 
-const router = useRouter()
-const products = ref(mockProducts)
+const router = useRouter();
+const products = ref([]);
+const loading = ref(false);
+const error = ref(null);
+const searchKeyword = ref('');
+
+const fetchProducts = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const params = {};
+    if (searchKeyword.value) {
+      params.keyword = searchKeyword.value;
+    }
+    const data = await getAllProductsApi(params);
+    products.value = data.map(p => ({
+      id: p.productId,
+      title: p.title,
+      image: p.imageUrl,
+      price: p.price,
+    }));
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
+    error.value = err.message || '无法连接到服务器或获取数据失败';
+    ElMessage.error(error.value);
+  } finally {
+    loading.value = false;
+  }
+};
 
 const goToDetail = (product) => {
-  router.push(`/product/${product.id}`)
-}
+  router.push(`/product/${product.id}`);
+};
+
+onMounted(() => {
+  fetchProducts();
+});
 </script>
 
 <style scoped>
 .browse-products {
-  padding: 32px 0 0 0;
-  min-height: 480px;
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
-  border-radius: 18px;
-  box-shadow: 0 4px 24px #c7d2fe33;
-  margin-bottom: 24px;
-  animation: fadeInBrowse 0.8s;
+  padding: 20px;
 }
-@keyframes fadeInBrowse {
-  from { opacity: 0; transform: translateY(30px);}
-  to { opacity: 1; transform: none;}
-}
-.browse-products h3 {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #6366f1;
-  margin-bottom: 32px;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 8px #e0e7ff44;
-}
-
 .product-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 32px 24px;
-  padding: 0 12px 32px 12px;
-  min-height: 320px;
-  transition: box-shadow 0.2s;
+  gap: 20px;
 }
-
-/* 可选：为空时的提示 */
-.product-list:empty::after {
-  content: "暂无商品，敬请期待~";
-  color: #b4b8d1;
-  font-size: 1.2rem;
-  margin: 40px auto;
-  display: block;
+.loading-state, .error-state, .empty-state {
+  padding: 20px;
   text-align: center;
-  letter-spacing: 1px;
 }
 </style>

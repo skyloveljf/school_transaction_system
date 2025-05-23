@@ -1,52 +1,35 @@
 <template>
   <div class="login-container">
-    <div class="login-bg"></div>
+    <div class="login-bg" />
     <el-card class="box-card">
       <div class="title-row">
-        <el-icon size="32" class="user-icon"><User /></el-icon>
+        <el-icon size="24"><User /></el-icon>
         <h2>{{ isLogin ? '用户登录' : '用户注册' }}</h2>
       </div>
+
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="用户名" prop="username">
-          <el-input
-            v-model="form.username"
-            placeholder="请输入用户名"
-            clearable
-            prefix-icon="User"
-            size="large"
-          />
+          <el-input v-model="form.username" placeholder="请输入用户名" />
         </el-form-item>
+
         <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="form.password"
-            show-password
-            placeholder="请输入密码"
-            clearable
-            prefix-icon="Lock"
-            size="large"
-          />
+          <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" />
         </el-form-item>
+
         <el-form-item v-if="!isLogin" label="确认密码" prop="confirmPassword">
-          <el-input
-            v-model="form.confirmPassword"
-            show-password
-            placeholder="请再次输入密码"
-            clearable
-            prefix-icon="Lock"
-            size="large"
-          />
+          <el-input v-model="form.confirmPassword" type="password" show-password placeholder="请再次输入密码" />
         </el-form-item>
+
+        <el-form-item v-if="!isLogin" label="邮箱" prop="email">
+          <el-input v-model="form.email" placeholder="请输入邮箱" />
+        </el-form-item>
+
         <el-form-item>
-          <el-button
-            type="primary"
-            :loading="loading"
-            @click="handleSubmit"
-            class="login-btn"
-            size="large"
-          >
+          <el-button type="primary" :loading="loading" @click="handleSubmit" style="width: 100%">
             {{ isLogin ? '登录' : '注册' }}
           </el-button>
         </el-form-item>
+
         <div class="switch-link">
           <span @click="toggleFormType">
             {{ isLogin ? '没有账号？点此注册' : '已有账号？点此登录' }}
@@ -60,9 +43,10 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { loginApi, registerApi } from '../api/user'
 import { useRouter } from 'vue-router'
-import { User } from '@element-plus/icons-vue' // User 图标用于标题行
+import { loginApi, registerApi } from '../api/user'
+import { User } from '@element-plus/icons-vue'
+import authService from '../services/authService'
 
 const router = useRouter()
 const isLogin = ref(true)
@@ -72,193 +56,194 @@ const formRef = ref()
 const form = reactive({
   username: '',
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
+  email: ''
 })
 
-const rules = computed(() => ({
+const rules = reactive({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  email: [
+    { 
+      required: computed(() => !isLogin.value),
+      message: '请输入邮箱地址', 
+      trigger: 'blur' 
+    },
+    { 
+      type: 'email', 
+      message: '请输入正确的邮箱地址', 
+      trigger: ['blur', 'change'],
+      validator: (rule, value, callback) => {
+        if (!isLogin.value && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          callback(new Error('请输入正确的邮箱地址'));
+        } else {
+          callback();
+        }
+      }
+    }
+  ],
   confirmPassword: [
-    {
-      required: !isLogin.value,
-      message: '请再次输入密码',
-      trigger: 'blur'
+    { 
+      required: computed(() => !isLogin.value),
+      message: '请再次输入密码', 
+      trigger: 'blur' 
     },
     {
-      validator: (rule, value, callback) => {
+      validator: (_, value) => {
         if (!isLogin.value && value !== form.password) {
-          callback(new Error('两次密码不一致'))
-        } else {
-          callback()
+          return Promise.reject('两次密码不一致');
         }
+        return Promise.resolve();
       },
       trigger: 'blur'
     }
   ]
-}))
+})
+
+const resetForm = () => {
+  form.username = '';
+  form.password = '';
+  form.confirmPassword = '';
+  form.email = '';
+  if (formRef.value) {
+    formRef.value.clearValidate();
+    formRef.value.resetFields();
+  }
+}
 
 const toggleFormType = () => {
-  isLogin.value = !isLogin.value
-  if (formRef.value) {
-    formRef.value.resetFields() // 重置表单字段值和校验状态
-  }
-  // 通常 resetFields 会将 form 中的值重置为初始值（空字符串）
-  // 如果发现 resetFields 后 form 中的值未按预期清空，可以保留下面的手动清空逻辑
-  // form.username = ''
-  // form.password = ''
-  // form.confirmPassword = ''
+  isLogin.value = !isLogin.value;
+  resetForm();
 }
 
 const handleSubmit = async () => {
-  if (!formRef.value) return
-  formRef.value.validate(async (valid) => {
-    if (valid) {
-      loading.value = true
-      const submitData = {
+  if (!formRef.value) return;
+  try {
+    await formRef.value.validate();
+  } catch (error) {
+    console.log('Form validation failed:', error);
+    return; 
+  }
+
+  loading.value = true;
+  try {
+    if (isLogin.value) {
+      const loginData = {
         username: form.username,
         password: form.password
+      };
+      
+      // 登录前先清除可能存在的旧登录信息
+      authService.clearLoginInfo();
+      
+      const res = await loginApi(loginData);
+      
+      // 检查返回数据完整性
+      if (!res || !res.accessToken) {
+        throw new Error('登录响应数据不完整，缺少token');
       }
-      try {
-        if (isLogin.value) {
-          const res = await loginApi(submitData)
-          ElMessage.success('登录成功')
-          localStorage.setItem('userInfo', JSON.stringify(res.data)) // 存储用户信息
-          const role = res.data.role
-          if (role === 'admin') {
-            router.push('/admin')
-          } else {
-            router.push('/userhome')
-          }
-        } else {
-          // 注册逻辑
-          await registerApi({ username: submitData.username, password: submitData.password })
-          ElMessage.success('注册成功，请登录')
-          toggleFormType() // 注册成功后切换到登录表单并重置
-        }
-      } catch (err) {
-        // 统一处理错误提示
-        const errorMessage = err?.response?.data?.message || err?.message || '操作失败，请重试'
-        ElMessage.error(errorMessage)
-      } finally {
-        loading.value = false
+      
+      // 确保用户对象存在
+      if (!res.user) {
+        console.warn('登录响应中没有用户信息，将尝试从token获取');
+        // 可以考虑从token中解析用户信息，或者调用其他API获取
+      }
+      
+      // 使用authService保存登录信息
+      authService.saveLoginInfo(res.accessToken, res.user);
+      console.log('登录成功，token已保存:', res.accessToken.substring(0, 15) + '...');
+      console.log('用户信息已保存:', res.user);
+      
+      ElMessage.success('登录成功');
+      
+      // 更新Axios拦截器
+      authService.setupAxiosInterceptors();
+      
+      // 根据用户角色导航到相应页面
+      if (res.user?.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/userhome');
       }
     } else {
-      ElMessage.error('请检查输入项')
-      // 不需要显式 return false，validate 的回调参数 valid 已经表明了校验结果
+      const registerData = {
+        username: form.username,
+        password: form.password,
+        email: form.email
+      };
+      await registerApi(registerData);
+      ElMessage.success('注册成功，请切换到登录页面进行登录。');
+      isLogin.value = true;
+      resetForm();
     }
-  })
+  } catch (err) {
+    console.error("Submit Handle Error:", err);
+    
+    // 提取错误信息并显示友好的错误消息
+    let errorMessage = '操作失败，请检查网络或联系管理员'; // 默认错误消息
+    
+    // err 对象现在可能是后端返回的错误对象 { message: "..." } 或 Error 实例
+    if (err && err.message) { // 如果 err 是一个对象并且有 message 属性
+      errorMessage = err.message;
+    } else if (typeof err === 'string') { // 如果 err 本身就是字符串
+      errorMessage = err;
+    }
+    // 如果err.response存在，通常是axios错误，其data中可能有后端具体错误
+    // 这一层已在 loginApi 中处理，这里直接用 err.message 即可
+    
+    ElMessage.error(errorMessage);
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
 <style scoped>
 .login-container {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-  overflow: hidden;
-  animation: fadeIn 1.2s;
 }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(40px);}
-  to { opacity: 1; transform: none;}
-}
+
 .login-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 80% 20%, #fbc2eb 0%, #a6c1ee 100%);
-  opacity: 0.5;
+  background: linear-gradient(135deg, #a8edea, #fed6e3);
   z-index: -1;
-  filter: blur(8px);
-  animation: bgMove 8s infinite alternate;
 }
-@keyframes bgMove {
-  0% { background-position: 80% 20%; }
-  100% { background-position: 20% 80%; }
-}
+
 .box-card {
   width: 420px;
-  padding: 38px 32px 28px 32px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.98);
-  box-shadow: 0 8px 32px 0 rgba(99,102,241,0.18), 0 2px 12px 0 rgba(0,0,0,0.06);
-  border: 1.5px solid #e0e7ff;
-  backdrop-filter: blur(2px);
-  transition: box-shadow 0.2s;
-  animation: cardPop 0.8s;
+  padding: 30px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  background-color: white;
 }
-@keyframes cardPop {
-  from { transform: scale(0.95);}
-  to { transform: scale(1);}
-}
+
 .title-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
+
 .title-row h2 {
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
-  font-size: 1.8rem;
-  color: #6366f1;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 8px #e0e7ff44;
 }
-.user-icon {
-  color: #6366f1;
-  background: #eef2ff;
-  border-radius: 50%;
-  padding: 8px;
-  box-shadow: 0 2px 8px #dbeafe;
-}
-.el-form-item {
-  margin-bottom: 24px;
-}
-:deep(.el-input__wrapper) {
-  background: #f3f4f6 !important;
-  border-radius: 10px !important;
-  border: 1.5px solid #e0e7ff !important;
-  transition: border-color 0.2s, box-shadow 0.2s !important;
-  box-shadow: 0 1px 4px #e0e7ff33 !important;
-}
-:deep(.el-input__wrapper.is-focus) {
-  border-color: #6366f1 !important;
-  box-shadow: 0 2px 8px #6366f122 !important;
-}
-:deep(.el-input__inner) {
-  font-size: 16px !important;
-  color: #3730a3 !important;
-  background: transparent !important;
-}
-.login-btn {
-  width: 100%;
-  font-weight: 700;
-  letter-spacing: 2px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
-  border: none;
-  box-shadow: 0 2px 8px #a1c4fd44;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.login-btn:hover {
-  background: linear-gradient(90deg, #6366f1 0%, #a1c4fd 100%);
-  box-shadow: 0 4px 16px #6366f144;
-}
+
 .switch-link {
   text-align: center;
-  color: #6366f1;
+  color: #409eff;
   cursor: pointer;
-  font-size: 15px;
-  margin-top: 16px;
-  transition: color 0.2s;
-  user-select: none;
+  font-size: 14px;
+  margin-top: 10px;
 }
+
 .switch-link span:hover {
   text-decoration: underline;
-  color: #3730a3;
 }
 </style>

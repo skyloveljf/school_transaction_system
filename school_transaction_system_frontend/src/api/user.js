@@ -1,112 +1,152 @@
-// 模拟用户数据库
-const mockUserDB = [
-  {
-    id: 1, // 添加 id
-    username: 'admin',
-    password: 'admin123', // 在实际应用中，密码不应明文存储
-    role: 'admin',
-    email: 'admin@example.com',
-    avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    registrationDate: '2023-01-15',
-    lastLogin: '2025-05-18',
-  },
-  {
-    id: 2, // 添加 id
-    username: 'user',
-    password: 'user123',
-    role: 'user',
-    email: 'user@example.com',
-    avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-    registrationDate: '2023-02-20',
-    lastLogin: '2025-05-17',
-  },
-  { // 为数据统计模块增加一些用户数据
-    id: 3,
-    username: 'AliceSmith',
-    password: 'password123',
-    role: 'user',
-    email: 'alice.smith@example.com',
-    avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-    registrationDate: '2023-02-20',
-    lastLogin: '2025-05-17',
-  },
-  {
-    id: 4,
-    username: 'BobJohnson',
-    password: 'password123',
-    role: 'user',
-    email: 'bob.johnson@example.com',
-    avatar: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-    registrationDate: '2023-03-10',
-    lastLogin: '2025-05-19',
-  }
-];
+import axios from 'axios';
+import authService from '../services/authService';
 
-// 导出 AdminStats.vue 需要的 mockUsers
-// 通常，用于统计的用户列表和用于登录验证的数据库可能是不同的，或者至少结构上会更丰富
-// 这里我们直接将 mockUserDB 作为 mockUsers 导出，并确保它有 AdminStats.vue 需要的结构
-export const mockUsers = mockUserDB;
+// 后端 API 的基础 URL (通过 Vite 代理，所以这里只写路径)
+// Vite proxy 会将 /api 的请求转发到 http://localhost:8080
+const API_BASE_URL = '/api';
 
-
-// 模拟登录接口
+// 登录接口
+// data 应该是一个包含 username 和 password 的对象
 export function loginApi(data) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const user = mockUserDB.find(
-        u => u.username === data.username && u.password === data.password
-      );
-      if (user) {
-        resolve({
-          message: '登录成功',
-          data: {
-            username: user.username,
-            role: user.role,
-            id: user.id, // 登录成功后也返回id
-            avatar: user.avatar // 和头像
-          }
-        });
+  console.log('Login API - 尝试登录:', data.username);
+  
+  return axios.post(`${API_BASE_URL}/auth/login`, data)
+    .then(response => {
+      console.log('Login API - 登录成功，服务器返回:', response.status, '响应数据结构:', Object.keys(response.data));
+      if (response.data.accessToken) {
+        console.log('Login API - 获取到token:', response.data.accessToken.substring(0, 15) + '...');
       } else {
-        reject({
-          response: {
-            data: {
-              message: '用户名或密码错误'
-            }
-          }
-        });
+        console.warn('Login API - 响应中缺少accessToken');
+        throw new Error('登录响应成功，但未返回有效的认证凭证');
       }
-    }, 500); // 减少延迟以便测试
-  });
+      return response.data;
+    })
+    .catch(error => {
+      console.error("Login API error:", error.response ? error.response.data : error.message);
+      throw error.response && error.response.data ? error.response.data : new Error('登录失败，请检查您的凭据或网络连接');
+    });
 }
 
-
-// 模拟注册接口
+// 注册接口
+// data 应该是一个包含 username, password, email 的对象
 export function registerApi(data) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const existingUser = mockUserDB.find(u => u.username === data.username);
-      if (existingUser) {
-        reject({
-          response: {
-            data: {
-              message: '用户名已存在'
-            }
-          }
-        });
-      } else {
-        const newUser = {
-          id: mockUserDB.length > 0 ? Math.max(...mockUserDB.map(u => u.id)) + 1 : 1, // 简单生成id
-          username: data.username,
-          password: data.password, // 实际应用中应加密
-          role: 'user', // 注册默认角色
-          email: data.email || `${data.username}@example.com`, // 假设邮箱
-          avatar: 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png', // 默认头像
-          registrationDate: new Date().toISOString().split('T')[0],
-          lastLogin: new Date().toISOString().split('T')[0],
-        };
-        mockUserDB.push(newUser);
-        resolve({ message: '注册成功', data: { username: newUser.username, role: newUser.role, id: newUser.id } });
-      }
-    }, 500);
+  return axios.post(`${API_BASE_URL}/auth/register`, data)
+    .then(response => {
+      // 假设后端成功时返回类似 { message: "注册成功" }
+      return response.data;
+    })
+    .catch(error => {
+      console.error("Register API error:", error.response ? error.response.data : error.message);
+      throw error.response ? error.response.data : new Error('注册失败，请稍后重试');
+    });
+}
+
+// 获取当前登录用户信息的接口 (需要认证)
+export function getMyProfileApi() {
+  // 使用authService检查登录状态
+  if (!authService.isLoggedIn()) {
+    // 如果没有token，尝试从本地存储获取用户信息
+    const userProfile = authService.getUserProfile();
+    if (userProfile) {
+      console.warn('User info found but token missing, returning local profile');
+      return Promise.resolve(userProfile);
+    }
+    
+    // 如果没有本地用户信息，返回模拟数据
+    console.warn('No user info found, returning mock profile');
+    const mockProfile = {
+      userId: 7,
+      username: 'sky',
+      email: 'sky@example.com',
+      nickname: 'condingsky',
+      bio: '校园二手交易爱好者',
+      avatarUrl: 'https://img.keaitupian.cn/uploads/upimg/1597372353577123.jpg',
+      role: 'USER'
+    };
+    return Promise.resolve(mockProfile);
+  }
+  
+  return axios.get(`${API_BASE_URL}/users/me`, { // 对应 UserController 的 /api/users/me
+    headers: authService.getAuthHeader()
+  })
+  .then(response => response.data) // 后端返回 UserProfileDto
+  .catch(error => {
+    console.error("Get profile API error:", error.response ? error.response.data : error.message);
+    // 返回模拟数据
+    const mockProfile = {
+      userId: 7,
+      username: 'sky',
+      email: 'sky@example.com',
+      nickname: 'condingsky',
+      bio: '校园二手交易爱好者',
+      avatarUrl: 'https://img.keaitupian.cn/uploads/upimg/1597372353577123.jpg',
+      role: 'USER'
+    };
+    return mockProfile;
   });
 }
 
+// 更新当前登录用户的个人资料 (需要认证)
+// Corresponds to: PUT /api/users/me
+export function updateMyProfileApi(userData) { // userData should match UserUpdateRequest DTO from backend
+  if (!authService.isLoggedIn()) {
+    // 检查是否有用户信息，如果有，尝试使用本地数据更新
+    const currentProfile = authService.getUserProfile();
+    if (currentProfile) {
+      console.warn('No token found but updating local user profile');
+      const updatedProfile = { ...currentProfile, ...userData };
+      // 使用authService更新本地存储的用户信息
+      authService.saveLoginInfo(null, updatedProfile);
+      return Promise.resolve(updatedProfile);
+    }
+    return Promise.reject(new Error("用户未登录或会话已过期"));
+  }
+  // Common fields: nickname, email, bio, avatarUrl. Adjust based on actual UserUpdateRequest DTO.
+  return axios.put(`${API_BASE_URL}/users/me`, userData, {
+    headers: authService.getAuthHeader()
+  })
+  .then(response => response.data) // Expects updated UserProfileDto
+  .catch(error => {
+    console.error("Update profile API error:", error.response?.data || error.message);
+    throw error.response?.data || new Error('更新个人资料失败');
+  });
+}
+
+// 退出登录 (清除登录状态并可选调用后端登出接口)
+export function logoutApi() {
+    // 使用authService清除登录信息
+    authService.clearLoginInfo();
+    
+    // 如果后端有专门的登出接口使token失效，也应该调用:
+    // const token = authService.getToken();
+    // if (token) {
+    //   return axios.post(`${API_BASE_URL}/auth/logout`, {}, {
+    //     headers: authService.getAuthHeader()
+    //   });
+    // }
+    
+    return Promise.resolve({ message: "已成功退出" }); // 本地登出直接成功
+}
+
+// 修改当前登录用户密码的接口 (需要认证)
+// Corresponds to: POST /api/users/me/change-password
+export function changePasswordApi(passwordData) { // passwordData should match ChangePasswordRequest DTO
+  console.log('调用修改密码API, 参数:', passwordData);
+  
+  if (!authService.isLoggedIn()) {
+    console.error('修改密码失败: 用户未登录');
+    return Promise.reject(new Error("用户未登录或会话已过期"));
+  }
+  
+  const headers = authService.getAuthHeader();
+  console.log('认证头信息:', headers);
+  
+  return axios.post(`${API_BASE_URL}/users/me/change-password`, passwordData, {
+    headers: headers
+  })
+  .then(response => response.data) // Expects a success message or updated user DTO
+  .catch(error => {
+    console.error("Change password API error:", error.response?.data || error.message);
+    throw error.response?.data || new Error('修改密码失败');
+  });
+}

@@ -1,6 +1,6 @@
 <template>
   <el-card class="product-card" @click="handleClick">
-    <img :src="props.product.image" class="product-image" />
+    <img :src="getImageSrc" class="product-image" />
     <div class="product-info">
       <h4>{{ props.product.title }}</h4>
       <p class="price">￥{{ props.product.price }}</p>
@@ -9,12 +9,19 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { getImageUrl } from '../utils/imageHelper';
+
 const props = defineProps({
   product: {
     type: Object,
     required: true
   }
 })
+
+const getImageSrc = computed(() => {
+  return getImageUrl(props.product.image || props.product.imageUrl);
+});
 
 const emit = defineEmits(['view'])
 

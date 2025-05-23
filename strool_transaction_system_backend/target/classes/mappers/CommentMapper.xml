@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yourproject.mapper.CommentMapper">
+    
+    <!-- 结果映射 -->
+    <resultMap id="CommentMap" type="com.example.yourproject.model.Comment">
+        <id property="id" column="id" />
+        <result property="productId" column="product_id" />
+        <result property="userId" column="user_id" />
+        <result property="content" column="content" />
+        <result property="createdTime" column="created_time" />
+        <result property="parentId" column="parent_id" />
+    </resultMap>
+
+    <!-- 添加新评论 -->
+    <insert id="addComment" parameterType="com.example.yourproject.model.Comment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO STS_DB.comments (product_id, user_id, content, created_time, parent_id)
+        VALUES (#{productId}, #{userId}, #{content}, #{createdTime}, #{parentId})
+    </insert>
+
+    <!-- 获取商品的所有顶级评论（不包括回复） -->
+    <select id="getTopLevelCommentsByProductId" resultMap="CommentMap">
+        SELECT c.* 
+        FROM STS_DB.comments c
+        WHERE c.product_id = #{productId} AND c.parent_id IS NULL
+        ORDER BY c.created_time DESC
+    </select>
+    
+    <!-- 获取评论的所有回复 -->
+    <select id="getRepliesByParentId" resultMap="CommentMap">
+        SELECT c.*
+        FROM STS_DB.comments c
+        WHERE c.parent_id = #{parentId}
+        ORDER BY c.created_time ASC
+    </select>
+    
+    <!-- 获取单个评论 -->
+    <select id="getCommentById" resultMap="CommentMap">
+        SELECT c.*
+        FROM STS_DB.comments c
+        WHERE c.id = #{id}
+    </select>
+    
+    <!-- 删除评论（包括该评论的所有回复） -->
+    <delete id="deleteComment">
+        DELETE FROM STS_DB.comments
+        WHERE id = #{id} OR parent_id = #{id}
+    </delete>
+    
+    <!-- 获取评论总数 -->
+    <select id="getCommentCountByProductId" resultType="int">
+        SELECT COUNT(*) 
+        FROM STS_DB.comments
+        WHERE product_id = #{productId}
+    </select>
+</mapper> 

@@ -1,396 +1,286 @@
 <template>
-  <div class="profile-container">
-    <el-skeleton :rows="10" animated v-if="isLoading" class="profile-skeleton"/>
-    <div v-else-if="!userDataLoaded" class="profile-empty">
-      <el-empty description="未能加载用户信息或用户不存在" />
-    </div>
-    <div class="profile-form" v-else>
-      <el-form label-width="80px" :model="editableUserInfo" class="profile-el-form">
-        <el-form-item label="头像">
-          <el-upload
-            class="avatar-uploader"
-            action="#"
-            :show-file-list="false"
-            :on-change="handleAvatarChange"
-            :auto-upload="false"
-            :disabled="!isOwnProfile"
-          >
-            <img v-if="editableUserInfo.avatar" :src="editableUserInfo.avatar" class="avatar" />
-            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-          </el-upload>
-        </el-form-item>
+  <div class="profile-form" v-loading="loadingProfile || savingProfile || avatarUploading">
+    <el-form label-width="100px" :model="userInfo" ref="profileFormRef" :rules="profileRules">
+      <el-form-item label="头像" prop="avatarUrl">
+        <el-upload
+          class="avatar-uploader"
+          action="#" 
+          :http-request="handleAvatarUploadRequest" 
+          :show-file-list="false"
+          :before-upload="beforeAvatarUpload"
+        >
+          <img v-if="userInfo.avatarUrl" :src="getImageUrl(userInfo.avatarUrl)" class="avatar" alt="User Avatar" @error="onImageError"/>
+          <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+        </el-upload>
+        <div class="el-upload__tip">点击上传新头像，仅支持JPG/PNG，小于2MB</div>
+      </el-form-item>
 
-        <el-form-item label="昵称">
-          <el-input v-model="editableUserInfo.nickname" clearable maxlength="20" :disabled="!isOwnProfile" />
-        </el-form-item>
+      <el-form-item label="用户名">
+        <el-input :model-value="userInfo.username" disabled />
+      </el-form-item>
 
-        <el-form-item label="邮箱">
-          <el-input v-model="editableUserInfo.email" clearable maxlength="40" :disabled="!isOwnProfile" />
-        </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="userInfo.email" placeholder="请输入您的邮箱"/>
+      </el-form-item>
 
-        <el-form-item label="简介">
-          <el-input type="textarea" v-model="editableUserInfo.bio" maxlength="100" show-word-limit rows="3" :disabled="!isOwnProfile" />
-        </el-form-item>
+      <el-form-item label="简介" prop="bio">
+        <el-input type="textarea" v-model="userInfo.bio" rows="3" placeholder="简单介绍一下自己吧"/>
+      </el-form-item>
 
-        <el-form-item v-if="isOwnProfile">
-          <el-button type="primary" @click="saveProfile" class="save-btn">保存修改</el-button>
-          <el-button @click="passwordDialogVisible = true" class="pwd-btn">修改密码</el-button>
-          <el-button v-if="route.name === 'AdminProfile'" @click="goBack" class="back-btn">返回</el-button> <!-- 新增返回按钮 -->
+      <el-form-item>
+        <el-button type="primary" @click="submitProfileChanges" :loading="savingProfile">保存修改</el-button>
+        <el-button @click="passwordDialogVisible = true">修改密码</el-button>
+      </el-form-item>
+    </el-form>
+
+    <el-dialog v-model="passwordDialogVisible" title="修改密码" width="400px" @closed="resetPasswordForm">
+      <el-form :model="passwordForm" label-width="100px" :rules="passwordRules" ref="passwordFormRef">
+        <el-form-item label="原密码" prop="oldPassword">
+          <el-input v-model="passwordForm.oldPassword" type="password" show-password />
         </el-form-item>
-         <el-form-item v-else>
-          <el-tag type="info">您正在查看其他用户的资料</el-tag>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="passwordForm.newPassword" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="confirmPassword">
+          <el-input v-model="passwordForm.confirmPassword" type="password" show-password />
         </el-form-item>
       </el-form>
-
-      <!-- 修改密码对话框 -->
-      <el-dialog v-model="passwordDialogVisible" title="修改密码" width="400px" class="pwd-dialog" append-to-body>
-        <el-form :model="passwordForm" label-width="100px" :rules="passwordRules" ref="passwordFormRef">
-          <el-form-item label="原密码" prop="oldPassword">
-            <el-input v-model="passwordForm.oldPassword" type="password" clearable show-password />
-          </el-form-item>
-          <el-form-item label="新密码" prop="newPassword">
-            <el-input v-model="passwordForm.newPassword" type="password" clearable show-password />
-          </el-form-item>
-          <el-form-item label="确认新密码" prop="confirmPassword">
-            <el-input v-model="passwordForm.confirmPassword" type="password" clearable show-password />
-          </el-form-item>
-        </el-form>
-        <template #footer>
-          <el-button @click="passwordDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitPassword">确认修改</el-button>
-        </template>
-      </el-dialog>
-    </div>
+      <template #footer>
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleChangePassword" :loading="changingPassword">确认修改</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage, ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElUpload, ElIcon } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import { mockUsers } from '../api/user'
+import { getMyProfileApi, updateMyProfileApi, changePasswordApi } from '../api/user'
+import { uploadImageApi } from '../api/upload'
+import authService from '../services/authService'
+import { getImageUrl } from '../utils/imageHelper'
 
-const route = useRoute()
-const router = useRouter()
-
-const isLoading = ref(true)
-const userDataLoaded = ref(false)
-const isOwnProfile = ref(false)
-
-const editableUserInfo = reactive({
-  id: null,
-  avatar: '',
-  nickname: '',
+const userInfo = reactive({
+  userId: null,
+  username: '', // 用户名通常不允许修改，从后端获取后设为disabled
+  avatarUrl: '',
   email: '',
-  bio: '',
-  role: ''
+  bio: ''
 })
 
-const getCurrentLoggedInUser = () => {
-  const userInfoString = localStorage.getItem('userInfo')
-  if (userInfoString) {
-    try {
-      return JSON.parse(userInfoString)
-    } catch (e) {
-      console.error("解析localStorage中的userInfo失败:", e)
-      localStorage.removeItem('userInfo')
-      return null
-    }
-  }
-  return null
-}
+const profileFormRef = ref(null)
+const loadingProfile = ref(false)
+const savingProfile = ref(false)
+const avatarUploading = ref(false)
 
-const fetchUserProfileById = async (userId) => {
-  // console.log(`尝试加载用户 ID: ${userId} 的信息`)
-  if (!Array.isArray(mockUsers) || mockUsers.length === 0) {
-    console.warn("mockUsers 为空或未定义")
-    return null
-  }
-  const user = mockUsers.find(u => u.id === parseInt(userId))
-  if (user) {
-    return { ...user }
-  }
-  // console.warn(`在 mockUsers 中未找到 ID 为 ${userId} 的用户`)
-  return null
-}
-
-onMounted(async () => {
-  // console.log('UserProfile mounted. Current route name:', route.name);
-  // console.log('Current route params:', route.params);
-
-  isLoading.value = true
-  userDataLoaded.value = false
-  const loggedInUser = getCurrentLoggedInUser();
-  // console.log('Logged in user from localStorage:', loggedInUser);
-  let targetUserId = null
-
-  if (!loggedInUser) {
-    ElMessage.error('您尚未登录，请先登录。')
-    isLoading.value = false
-    return;
-  }
-
-  if (route.name === 'AdminProfile') {
-    // console.log('Condition: route.name is AdminProfile');
-    if (loggedInUser && loggedInUser.role === 'admin') {
-      // console.log('Condition: loggedInUser is admin. Admin ID:', loggedInUser.id);
-      targetUserId = loggedInUser.id;
-      isOwnProfile.value = true;
-    } else {
-      // console.warn('Condition: loggedInUser is NOT admin or loggedInUser is null. Role:', loggedInUser?.role);
-      ElMessage.error('权限不足或无法识别管理员身份。');
-      isLoading.value = false;
-      return;
-    }
-  } else if (route.params.id) {
-    // console.log('Condition: route.params.id exists. Param ID:', route.params.id);
-    targetUserId = route.params.id
-    isOwnProfile.value = loggedInUser.id === parseInt(targetUserId)
-  } else {
-    // console.log('Condition: Fallback - loading current loggedInUser. User ID:', loggedInUser.id);
-    targetUserId = loggedInUser.id
-    isOwnProfile.value = true
-  }
-
-  // console.log('Final targetUserId to load:', targetUserId);
-  // console.log('Is own profile:', isOwnProfile.value);
-
-  if (targetUserId) {
-    const profileData = await fetchUserProfileById(targetUserId);
-    // console.log('Fetched profile data:', profileData);
-    if (profileData) {
-        Object.assign(editableUserInfo, profileData)
-        userDataLoaded.value = true
-    } else {
-        ElMessage.error('加载用户信息失败或用户不存在。');
-    }
-  } else {
-    ElMessage.warning('无法确定要加载的用户信息（targetUserId is null）。')
-  }
-  isLoading.value = false
-})
-
-const saveProfile = () => {
-  if (!isOwnProfile.value) return;
-  const userIndex = mockUsers.findIndex(u => u.id === editableUserInfo.id)
-  if (userIndex !== -1) {
-    mockUsers[userIndex] = { ...mockUsers[userIndex], ...editableUserInfo }
-    const loggedInUser = getCurrentLoggedInUser()
-    if (loggedInUser && loggedInUser.id === editableUserInfo.id) {
-      localStorage.setItem('userInfo', JSON.stringify(mockUsers[userIndex]))
-    }
-    ElMessage.success('信息保存成功 (模拟)')
-  } else {
-    ElMessage.error('保存失败：未找到用户 (模拟)')
-  }
-  // console.log("保存的用户信息:", editableUserInfo);
-}
-
-const handleAvatarChange = (uploadFile) => {
-  if (!isOwnProfile.value) return;
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    editableUserInfo.avatar = e.target.result
-  }
-  reader.readAsDataURL(uploadFile.raw)
-  ElMessage.info('头像已预览，点击“保存修改”以生效。')
+const profileRules = {
+  email: [
+    { required: true, message: '邮箱不能为空', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱格式', trigger: ['blur', 'change'] }
+  ],
+  // avatarUrl: [{ required: true, message: '头像不能为空', trigger: 'change' }] // Can be optional
 }
 
 const passwordDialogVisible = ref(false)
-const passwordFormRef = ref()
+const passwordFormRef = ref(null)
 const passwordForm = reactive({
   oldPassword: '',
   newPassword: '',
   confirmPassword: ''
 })
-
-const validatePass = (rule, value, callback) => {
-  if (value === '') {
-    callback(new Error('请输入密码'))
-  } else {
-    if (passwordForm.confirmPassword !== '') {
-      passwordFormRef.value?.validateField('confirmPassword')
-    }
-    callback()
-  }
-}
-const validatePass2 = (rule, value, callback) => {
-  if (value === '') {
-    callback(new Error('请再次输入密码'))
-  } else if (value !== passwordForm.newPassword) {
-    callback(new Error("两次输入的密码不一致!"))
-  } else {
-    callback()
-  }
-}
+const changingPassword = ref(false)
 
 const passwordRules = {
   oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
   newPassword: [
     { required: true, message: '请输入新密码', trigger: 'blur' },
-    { validator: validatePass, trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur'}
+    { min: 6, message: '新密码长度不能少于6位', trigger: 'blur' }
   ],
   confirmPassword: [
     { required: true, message: '请确认新密码', trigger: 'blur' },
-    { validator: validatePass2, trigger: 'blur' }
+    {
+      validator: (rule, value, callback) => {
+        if (value !== passwordForm.newPassword) {
+          callback(new Error('两次输入的密码不一致!'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ]
 }
 
-const submitPassword = () => {
-  if (!isOwnProfile.value) return;
-  if (!passwordFormRef.value) return;
-  passwordFormRef.value.validate((valid) => {
+const loadUserProfile = async () => {
+  loadingProfile.value = true
+  try {
+    const data = await getMyProfileApi()
+    userInfo.userId = data.userId
+    userInfo.username = data.username
+    userInfo.avatarUrl = data.avatarUrl || '' // Fallback to empty string if null
+    userInfo.email = data.email
+    userInfo.bio = data.bio || ''
+  } catch (error) {
+    ElMessage.error(error.message || '加载用户信息失败')
+  } finally {
+    loadingProfile.value = false
+  }
+}
+
+onMounted(loadUserProfile)
+
+const beforeAvatarUpload = (rawFile) => {
+  const isImage = rawFile.type.startsWith('image/')
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件 (JPG, PNG)')
+    return false
+  }
+  const isLt2M = rawFile.size / 1024 / 1024 < 2
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
+const handleAvatarUploadRequest = async (options) => {
+  avatarUploading.value = true
+  try {
+    const imageUrl = await uploadImageApi(options.file)
+    userInfo.avatarUrl = imageUrl
+    ElMessage.success('头像上传成功！新头像将在保存后生效。')
+    // Optionally trigger validation for avatarUrl if it has rules
+    // profileFormRef.value?.validateField('avatarUrl')
+  } catch (error) {
+    ElMessage.error(error.message || '头像上传失败')
+  } finally {
+    avatarUploading.value = false
+  }
+}
+
+const submitProfileChanges = async () => {
+  if (!profileFormRef.value) return
+  await profileFormRef.value.validate(async (valid) => {
     if (valid) {
-      // console.log("修改密码提交:", passwordForm, "用户ID:", editableUserInfo.id)
-      ElMessage.success('密码修改成功 (模拟)')
-      passwordDialogVisible.value = false
-      passwordFormRef.value.resetFields()
+      savingProfile.value = true
+      try {
+        // Prepare payload based on UserUpdateRequest DTO for backend
+        const payload = {
+          email: userInfo.email,
+          bio: userInfo.bio,
+          avatarUrl: userInfo.avatarUrl 
+        }
+        const updatedProfile = await updateMyProfileApi(payload)
+        ElMessage.success('个人资料更新成功！')
+              // 使用authService更新本地存储的用户信息
+      authService.saveLoginInfo(null, updatedProfile);
+        // Optionally re-fetch or update specific fields if response differs slightly
+        userInfo.avatarUrl = updatedProfile.avatarUrl;
+        userInfo.bio = updatedProfile.bio || userInfo.bio; // 更新bio字段
+        // etc. for other fields returned by backend
+
+      } catch (error) {
+        ElMessage.error(error.message || '保存失败，请稍后重试')
+      } finally {
+        savingProfile.value = false
+      }
     } else {
-      ElMessage.error('请检查密码输入。')
+      ElMessage.error('请检查表单信息是否填写正确。')
+      return false
     }
   })
 }
 
-// 新增返回方法
-const goBack = () => {
-  router.go(-1) // 或者 router.back()
+const handleChangePassword = async () => {
+  console.log('修改密码按钮被点击');
+  // 检查用户是否已登录
+  console.log('登录状态:', authService.isLoggedIn());
+  console.log('用户信息:', authService.getUserProfile());
+  
+  if (!passwordFormRef.value) return
+  await passwordFormRef.value.validate(async (valid) => {
+    console.log('表单验证结果:', valid);
+    if (valid) {
+      changingPassword.value = true
+      try {
+        const { oldPassword, newPassword, confirmPassword } = passwordForm
+        // 调用实际的API，正确映射参数名
+        const response = await changePasswordApi({ 
+          oldPassword, 
+          newPassword, 
+          confirmNewPassword: confirmPassword  // 映射前端的confirmPassword到后端的confirmNewPassword
+        })
+        ElMessage.success(response.message || '密码修改成功！') // 后端可能直接返回消息字符串
+        passwordDialogVisible.value = false
+      } catch (error) {
+        // error已经是处理过的，可以直接显示message
+        ElMessage.error(error.message || '密码修改失败，请重试');
+      } finally {
+        changingPassword.value = false
+      }
+    }
+  })
 }
 
-watch(() => route.params.id, (newId, oldId) => {
-  if (newId && newId !== oldId && route.name !== 'AdminProfile') {
-    onMounted()
-  }
-})
-watch(() => route.name, (newName, oldName) => {
-  if (newName === 'AdminProfile' && newName !== oldName) {
-    onMounted()
-  }
-})
+const resetPasswordForm = () => {
+  passwordFormRef.value?.resetFields()
+  passwordForm.oldPassword = ''
+  passwordForm.newPassword = ''
+  passwordForm.confirmPassword = ''
+}
 
+const onImageError = (event) => {
+  event.target.src = 'default-placeholder.png' // Path to your default placeholder image
+}
 </script>
 
 <style scoped>
-.profile-container {
-  /* 整体容器样式，可以根据需要调整 */
-  padding: 20px;
-}
-.profile-skeleton {
-  max-width: 520px;
-  margin: 40px auto;
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 18px;
-}
-.profile-empty {
-  margin-top: 50px;
-}
 .profile-form {
-  max-width: 520px;
-  margin: 0 auto;
-  /* padding: 36px 0 0 0; */ /* 移除顶部padding，让整体容器控制 */
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
-  border-radius: 18px;
-  box-shadow: 0 4px 24px #c7d2fe33;
-  animation: fadeInProfile 0.8s;
-  overflow: hidden; /* 确保内部 el-form 的背景不会溢出 */
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
-@keyframes fadeInProfile {
-  from { opacity: 0; transform: translateY(30px);}
-  to { opacity: 1; transform: none;}
-}
-.profile-el-form {
-  background: rgba(255,255,255,0.98);
-  /* border-radius: 14px; */ /* 移除这里的圆角，让父级控制 */
-  box-shadow: 0 2px 12px #a1c4fd22;
-  padding: 32px 28px 18px 28px;
-}
-.avatar-uploader {
-  display: inline-block;
-  cursor: pointer;
-  transition: box-shadow 0.2s;
-}
-.avatar-uploader:hover {
-  box-shadow: 0 2px 12px #a1c4fd55;
-}
-.avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 2.5px solid #e0e7ff;
-  box-shadow: 0 2px 8px #e0e7ff55;
-  object-fit: cover;
-  background: #fff;
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-.avatar-uploader-icon {
-  font-size: 32px;
-  color: #b4b8d1;
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  text-align: center;
-  border: 2px dashed #e0e7ff;
-  border-radius: 50%;
-  background: #f8fafc;
-  transition: border-color 0.2s;
-}
-.avatar-uploader:hover .avatar-uploader-icon {
-  border-color: #6366f1;
-  color: #6366f1;
-}
-.save-btn {
-  font-weight: 700;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
-  border: none;
-  color: #6366f1;
-  transition: background 0.2s;
-  margin-right: 12px;
-}
-.save-btn:hover {
-  background: linear-gradient(90deg, #6366f1 0%, #a1c4fd 100%);
-  color: #fff;
-}
-.pwd-btn {
-  border-radius: 10px;
-  font-weight: 600;
-  color: #6366f1;
-  background: #f3f4f6;
-  border: 1.5px solid #e0e7ff;
-  /* margin-left: 0; */ /* 移除，让按钮自然排列 */
-  margin-right: 12px; /* 为返回按钮留出间距 */
-  transition: background 0.2s, color 0.2s;
-}
-.pwd-btn:hover {
-  background: #6366f1;
-  color: #fff;
-}
-/* 返回按钮样式 */
-.back-btn {
-  border-radius: 10px;
-  font-weight: 600;
-  /* color: #6366f1; */ /* 可以自定义颜色或使用默认按钮颜色 */
-  /* background: #f3f4f6; */
-  /* border: 1.5px solid #e0e7ff; */
-  transition: background 0.2s, color 0.2s;
-}
-/* 如果需要特定样式可以取消注释并修改 */
-/* .back-btn:hover {
-  background: #e0e7ff;
-  color: #3730a3;
-} */
 
-.pwd-dialog :deep(.el-dialog__body) {
-  padding-top: 18px;
-  padding-bottom: 0;
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
 }
-.pwd-dialog :deep(.el-dialog__header) {
-  border-bottom: 1px solid #e0e7ff;
-  margin-right: 0;
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
 }
-.pwd-dialog :deep(.el-dialog__footer) {
-  border-top: 1px solid #e0e7ff;
+
+.avatar {
+  width: 100px; /* Increased size */
+  height: 100px; /* Increased size */
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 100px; /* Increased size */
+  height: 100px; /* Increased size */
+  line-height: 100px;
+  text-align: center;
+  border: 1px dashed #d9d9d9;
+  border-radius: 50%;
+}
+
+.el-upload__tip {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 7px;
 }
 </style>

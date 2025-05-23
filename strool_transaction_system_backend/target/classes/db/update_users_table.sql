@@ -1,0 +1,2 @@
+-- ΪUSERS�����bio�ֶΣ��û���飩
+ALTER TABLE STS_DB.USERS ADD bio VARCHAR(500);
