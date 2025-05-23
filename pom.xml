@@ -13,17 +13,17 @@
     <description>Parent project for the Campus Second Hand Trading System</description>
 
     <modules>
-        <module>backend</module>
-        <module>frontend</module>
+        <module>school_transaction_system_frontend</module>
+
     </modules>
 
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-boot.version>3.1.5</spring-boot.version> <!-- Çë¸ù¾ÝÄúµÄÑ¡Ôñ»òREADMEÖÐµÄ°æ±¾½øÐÐµ÷Õû -->
+        <spring-boot.version>3.1.5</spring-boot.version> <!-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½READMEï¿½ÐµÄ°æ±¾ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ -->
         <mybatis-spring-boot-starter.version>3.0.3</mybatis-spring-boot-starter.version>
-        <dm-jdbc-driver.version>8.1.3.140</dm-jdbc-driver.version> <!-- ´ïÃÎJDBCÇý¶¯°æ±¾£¬Çë¸ù¾ÝREADME»òÊµ¼ÊÇé¿öµ÷Õû -->
+        <dm-jdbc-driver.version>8.1.3.140</dm-jdbc-driver.version> <!-- ï¿½ï¿½ï¿½ï¿½JDBCï¿½ï¿½ï¿½ï¿½ï¿½æ±¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½READMEï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -->
     </properties>
 
     <dependencyManagement>
