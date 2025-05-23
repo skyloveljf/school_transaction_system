@@ -245,10 +245,10 @@ const scrollToBottom = async (behavior = 'smooth') => {
 }
 
 const sendMessage = async () => {
-  if (!newMessage.value.trim() || !conversationId) return
+  if (!newMessage.value.trim() || !conversationId) return;
   
-  const content = newMessage.value.trim()
-  const tempMessageId = `temp-${Date.now()}`
+  const content = newMessage.value.trim();
+  const tempMessageId = `temp-${Date.now()}`;
 
   const optimisticMessage = {
     messageId: tempMessageId,
@@ -259,61 +259,61 @@ const sendMessage = async () => {
     content: content,
     sendTime: new Date().toISOString(),
     isOptimistic: true
-  }
-  // DEBUG: Log optimistic message
+  };
   console.log('[ChatWindow DEBUG] Optimistic message being pushed:', optimisticMessage);
 
-  messages.value.push(optimisticMessage)
-  newMessage.value = ''
-  await scrollToBottom('auto')
+  messages.value.push(optimisticMessage);
+  newMessage.value = '';
+  await scrollToBottom('auto');
 
-  sending.value = true
+  sending.value = true;
   try {
-  const response = await sendMessageApi(conversationId, content);
-  const sentMessageData = response.data;
+    // 1. 'sendMessageApi' 预计返回的是实际的消息对象本身
+    const actualMessageObjectFromServer = await sendMessageApi(conversationId, content); 
 
-  console.log('[ChatWindow DEBUG] Message data from server after send:', sentMessageData);
+    // 2. 因此，sentMessageData 就是 actualMessageObjectFromServer，不再需要 .data
+    const sentMessageData = actualMessageObjectFromServer; 
 
-  // 添加校验逻辑
-  if (sentMessageData && typeof sentMessageData === 'object' && sentMessageData.hasOwnProperty('messageId')) {
-    const index = messages.value.findIndex(m => m.messageId === tempMessageId);
-    if (index !== -1) {
-      messages.value.splice(index, 1, sentMessageData);
+    // 这条日志现在应该能正确打印出消息对象了
+    console.log('[ChatWindow DEBUG] Message data from server after send:', sentMessageData);
+
+    // 3. 后续的校验逻辑保持不变
+    if (sentMessageData && typeof sentMessageData === 'object' && sentMessageData.hasOwnProperty('messageId')) {
+      const index = messages.value.findIndex(m => m.messageId === tempMessageId);
+      if (index !== -1) {
+        messages.value.splice(index, 1, sentMessageData);
+      } else {
+        console.warn('[ChatWindow WARN] Optimistic message not found by tempId, but server response was valid. Pushing server message.');
+        messages.value.push(sentMessageData);
+      }
+      
+      // 只有在成功更新消息列表后才滚动
+      // （保持你原来的滚动逻辑或根据需要调整）
+      if (messagesBox.value.scrollHeight - (messagesBox.value.scrollTop + messagesBox.value.clientHeight) <= 100) { // 简化了条件，如果用户接近底部则滚动
+         await scrollToBottom('smooth');
+      }
     } else {
-      // 理论上，乐观消息应该能被找到。如果找不到，也只在数据有效时添加。
-      console.warn('[ChatWindow WARN] Optimistic message not found by tempId, but server response was valid. Pushing server message.');
-      messages.value.push(sentMessageData);
+      // 这里的日志可以更具体一些
+      console.error('[ChatWindow ERROR] Invalid or unexpected message data structure received from sendMessageApi:', sentMessageData);
+      ElMessage.error('消息发送成功，但更新列表时数据格式不正确。');
+      // 移除乐观消息
+      const index = messages.value.findIndex(m => m.messageId === tempMessageId && m.isOptimistic);
+      if (index !== -1) {
+        messages.value.splice(index, 1);
+      }
     }
+  } catch (error) {
+    console.error('发送消息详细错误:', error);
+    ElMessage.error('发送消息失败：' + (error.response?.data?.message || error.message || '未知错误'));
     
-    // 只有在成功更新消息列表后才滚动
-    if (messagesBox.value.scrollHeight - (messagesBox.value.scrollTop + messagesBox.value.clientHeight) > 100) {
-      // User has scrolled up, maybe don't auto-scroll, or provide a "new message" indicator
-    } else {
-      await scrollToBottom('smooth');
-    }
-
-  } else {
-    console.error('[ChatWindow ERROR] Invalid message data received from server:', sentMessageData);
-    ElMessage.error('消息发送成功，但更新消息列表失败。请检查服务器响应。');
-    // 可选：如果服务器响应无效，你可能仍想移除乐观消息，以避免显示不正确的数据
-    const index = messages.value.findIndex(m => m.messageId === tempMessageId && m.isOptimistic);
+    const index = messages.value.findIndex(m => m.messageId === tempMessageId);
     if (index !== -1) {
       messages.value.splice(index, 1);
     }
+    newMessage.value = content;
+  } finally {
+    sending.value = false;
   }
-} catch (error) {
-  console.error('发送消息详细错误:', error);
-  ElMessage.error('发送消息失败：' + (error.response?.data?.message || error.message || '未知错误'));
-  
-  // 从 UI 中移除乐观更新的消息
-  const index = messages.value.findIndex(m => m.messageId === tempMessageId);
-  if (index !== -1) {
-    messages.value.splice(index, 1);
-  }
-  newMessage.value = content; // 恢复输入框内容
-} finally {
-  sending.value = false;
-}
 }
 
 const goBack = () => {
