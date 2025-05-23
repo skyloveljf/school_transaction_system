@@ -1,117 +1,260 @@
 <template>
-  <div class="admin-page">
-    <div class="admin-header">
-      <img src="https://img.icons8.com/color/96/administrator-male.png" alt="管理员头像" class="admin-avatar" />
-      <div>
-        <h1>管理员后台</h1>
-        <p>欢迎回来，管理员！这里是你的管理面板。</p>
+  <div class="admin-page-container">
+    <el-header class="admin-header-bar">
+      <div class="header-title">
+        <el-icon :size="28" style="margin-right: 10px;"><Platform /></el-icon>
+        <span>校园二手交易管理后台</span>
       </div>
-    </div>
-    <div class="admin-panels">
-      <div class="admin-card user">
-        <div class="icon"><span>👤</span></div>
-        <div class="info">
-          <div class="title">用户管理</div>
-          <div class="desc">查看、删除用户</div>
-        </div>
+      <div class="header-actions">
+        <el-dropdown @command="handleDropdownCommand">
+          <span class="el-dropdown-link">
+            <el-avatar :size="32" :icon="UserFilled" style="margin-right: 8px; background-color: #c0c4cc;"/>
+            <span>管理员</span>
+            <el-icon class="el-icon--right"><arrow-down /></el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+              <el-dropdown-item command="settings">设置</el-dropdown-item>
+              <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
-      <div class="admin-card product">
-        <div class="icon"><span>🛒</span></div>
-        <div class="info">
-          <div class="title">商品管理</div>
-          <div class="desc">审核、下架、删除商品</div>
-        </div>
+    </el-header>
+
+    <el-main class="admin-main-content">
+      <div class="admin-panels">
+        <el-card shadow="hover" class="admin-card" @click="openUserDialog">
+          <div class="card-content">
+            <el-icon :size="40" class="card-icon user-icon"><User /></el-icon>
+            <div class="info">
+              <div class="title">用户管理</div>
+              <div class="desc">查看、编辑、删除用户</div>
+            </div>
+          </div>
+        </el-card>
+
+        <el-card shadow="hover" class="admin-card" @click="openProductDialog">
+          <div class="card-content">
+            <el-icon :size="40" class="card-icon product-icon"><Goods /></el-icon>
+            <div class="info">
+              <div class="title">商品管理</div>
+              <div class="desc">审核、上下架、删除商品</div>
+            </div>
+          </div>
+        </el-card>
+
+        <el-card shadow="hover" class="admin-card" @click="openCommentDialog">
+          <div class="card-content">
+            <el-icon :size="40" class="card-icon comment-icon"><ChatDotSquare /></el-icon>
+            <div class="info">
+              <div class="title">评论管理</div>
+              <div class="desc">查看、删除用户评论</div>
+            </div>
+          </div>
+        </el-card>
+
+        <el-card shadow="hover" class="admin-card" @click="openStatsDialog">
+          <div class="card-content">
+            <el-icon :size="40" class="card-icon stats-icon"><DataAnalysis /></el-icon>
+            <div class="info">
+              <div class="title">数据统计</div>
+              <div class="desc">平台关键数据一览</div>
+            </div>
+          </div>
+        </el-card>
       </div>
-      <div class="admin-card comment">
-        <div class="icon"><span>💬</span></div>
-        <div class="info">
-          <div class="title">评论管理</div>
-          <div class="desc">查看、删除评论</div>
-        </div>
-      </div>
-      <div class="admin-card stats">
-        <div class="icon"><span>📊</span></div>
-        <div class="info">
-          <div class="title">数据统计</div>
-          <div class="desc">平台数据一览</div>
-        </div>
-      </div>
-    </div>
+    </el-main>
+
+    <AdminUserManage ref="userManageRef" />
+    <AdminProductManage ref="productManageRef" />
+    <AdminCommentManage ref="commentManageRef" />
+    <AdminStats ref="statsRef" />
+    <AdminSettingsDialog ref="adminSettingsDialogRef" />
   </div>
 </template>
 
 <script setup>
-// 后续可以添加逻辑，比如获取商品列表、用户信息等
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  User,
+  Goods,
+  ChatDotSquare,
+  DataAnalysis,
+  Platform,
+  UserFilled,
+  ArrowDown
+} from '@element-plus/icons-vue'
+import AdminUserManage from '../components/AdminUserManage.vue'
+import AdminProductManage from '../components/AdminProductManage.vue'
+import AdminCommentManage from '../components/AdminCommentManage.vue'
+import AdminStats from '../components/AdminStats.vue'
+import AdminSettingsDialog from '../components/AdminSettingsDialog.vue'
+
+const router = useRouter()
+
+const userManageRef = ref(null)
+const productManageRef = ref(null)
+const commentManageRef = ref(null)
+const statsRef = ref(null)
+const adminSettingsDialogRef = ref(null)
+
+const openUserDialog = () => {
+  if (userManageRef.value) userManageRef.value.visible = true
+}
+const openProductDialog = () => {
+  if (productManageRef.value) productManageRef.value.visible = true
+}
+const openCommentDialog = () => {
+  if (commentManageRef.value) commentManageRef.value.visible = true
+}
+const openStatsDialog = () => {
+  if (statsRef.value) {
+    statsRef.value.fetchData?.()
+    statsRef.value.visible = true
+  }
+}
+
+const handleDropdownCommand = (command) => {
+  if (command === 'profile') {
+    router.push('/admin-profile') // This will now point to UserProfile.vue
+  } else if (command === 'settings') {
+    if (adminSettingsDialogRef.value) {
+      adminSettingsDialogRef.value.visible = true
+    }
+  } else if (command === 'logout') {
+    // Add your actual logout logic here (e.g., clear token, reset store)
+    console.log('执行退出登录')
+    localStorage.removeItem('userInfo') // Example: remove user info
+    router.push('/')
+  }
+}
 </script>
 
 <style scoped>
-.admin-page {
-  padding: 40px 0;
+.admin-page-container {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  background-color: #f0f2f5;
+  animation: fadeInPage 0.7s ease-out; /* 新增页面淡入动画 */
 }
-.admin-header {
+
+@keyframes fadeInPage { /* 定义页面淡入动画 */
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 60px; /* 可以调整为 64px 或与 Element Plus 默认更一致的高度 */
+  background-color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  /* border-bottom: 1px solid #e8e8e8; */ /* 阴影足够时，底部边框可以省略 */
+  z-index: 10; /* 确保header在内容之上 */
+}
+
+.header-title {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #303133;
+  padding: 8px; /* 增加点击区域和视觉舒适度 */
+  border-radius: 6px; /* 轻微圆角 */
+  transition: background-color 0.2s ease;
+}
+.el-dropdown-link:hover {
+  background-color: #f5f7fa; /* Element Plus hover 背景色 */
+  color: var(--el-color-primary);
+}
+
+.admin-main-content {
+  flex-grow: 1;
+  padding: 24px;
+}
+
+.admin-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
 }
-.admin-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 8px #dbeafe;
-  border: 2px solid #6366f1;
-}
-.admin-header h1 {
-  margin: 0;
-  font-size: 2.2rem;
-  color: #3730a3;
-  font-weight: bold;
-}
-.admin-header p {
-  margin: 8px 0 0 0;
-  color: #6366f1;
-  font-size: 1.1rem;
-}
-.admin-panels {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 32px;
-}
+
 .admin-card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px #c7d2fe55;
-  width: 220px;
-  height: 140px;
+  border-radius: 16px; /* 调整圆角与其他界面更一致 */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* 更平滑的过渡效果 */
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* 调整初始阴影，更柔和 */
+}
+
+.admin-card:hover {
+  transform: translateY(-6px) scale(1.015); /* 调整悬浮效果 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* 调整悬浮阴影 */
+}
+
+.card-content {
   display: flex;
   align-items: center;
-  padding: 24px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  border: 2px solid transparent;
+  padding: 24px; /* 稍微增加内边距 */
 }
-.admin-card:hover {
-  transform: translateY(-8px) scale(1.04);
-  box-shadow: 0 8px 32px #6366f155;
-  border-color: #6366f1;
+
+.card-icon {
+  margin-right: 20px;
+  padding: 14px; /* 调整图标内边距 */
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* 给图标背景一个小阴影 */
 }
-.admin-card .icon {
-  font-size: 2.5rem;
-  margin-right: 18px;
+
+/* 图标颜色保持不变，功能性区分 */
+.user-icon { background-color: #409EFF; }
+.product-icon { background-color: #67C23A; }
+.comment-icon { background-color: #E6A23C; }
+.stats-icon { background-color: #F56C6C; }
+
+.info {
+  flex-grow: 1;
 }
-.admin-card .title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #3730a3;
+
+.title {
+  font-size: 1.2rem; /* 稍微增大标题字号 */
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 8px; /* 调整间距 */
 }
-.admin-card .desc {
-  font-size: 0.98rem;
-  color: #6366f1;
-  margin-top: 6px;
+
+.desc {
+  font-size: 0.9rem; /* 稍微增大描述字号 */
+  color: #5f6368; /* 调整描述文字颜色，更柔和 */
+  line-height: 1.4;
 }
 </style>

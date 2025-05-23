@@ -48,7 +48,7 @@
           </el-button>
         </el-form-item>
         <div class="switch-link">
-          <span @click="isLogin = !isLogin">
+          <span @click="toggleFormType">
             {{ isLogin ? '没有账号？点此注册' : '已有账号？点此登录' }}
           </span>
         </div>
@@ -58,11 +58,11 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
 import { loginApi, registerApi } from '../api/user'
-import { User } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+import { User } from '@element-plus/icons-vue' // User 图标用于标题行
 
 const router = useRouter()
 const isLogin = ref(true)
@@ -75,51 +75,78 @@ const form = reactive({
   confirmPassword: ''
 })
 
-const rules = {
+const rules = computed(() => ({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   confirmPassword: [
-    { required: false },
     {
-      validator: (_, value) => {
+      required: !isLogin.value,
+      message: '请再次输入密码',
+      trigger: 'blur'
+    },
+    {
+      validator: (rule, value, callback) => {
         if (!isLogin.value && value !== form.password) {
-          return Promise.reject('两次密码不一致')
+          callback(new Error('两次密码不一致'))
+        } else {
+          callback()
         }
-        return Promise.resolve()
       },
       trigger: 'blur'
     }
   ]
+}))
+
+const toggleFormType = () => {
+  isLogin.value = !isLogin.value
+  if (formRef.value) {
+    formRef.value.resetFields() // 重置表单字段值和校验状态
+  }
+  // 通常 resetFields 会将 form 中的值重置为初始值（空字符串）
+  // 如果发现 resetFields 后 form 中的值未按预期清空，可以保留下面的手动清空逻辑
+  // form.username = ''
+  // form.password = ''
+  // form.confirmPassword = ''
 }
 
 const handleSubmit = async () => {
-  await formRef.value.validate()
-  const data = {
-    username: form.username,
-    password: form.password
-  }
-
-  try {
-    loading.value = true
-    if (isLogin.value) {
-      const res = await loginApi(data)
-      ElMessage.success('登录成功')
-      const role = res.data.role
-      if (role === 'admin') {
-        router.push('/admin')
-      } else {
-        router.push('/userhome')
+  if (!formRef.value) return
+  formRef.value.validate(async (valid) => {
+    if (valid) {
+      loading.value = true
+      const submitData = {
+        username: form.username,
+        password: form.password
+      }
+      try {
+        if (isLogin.value) {
+          const res = await loginApi(submitData)
+          ElMessage.success('登录成功')
+          localStorage.setItem('userInfo', JSON.stringify(res.data)) // 存储用户信息
+          const role = res.data.role
+          if (role === 'admin') {
+            router.push('/admin')
+          } else {
+            router.push('/userhome')
+          }
+        } else {
+          // 注册逻辑
+          await registerApi({ username: submitData.username, password: submitData.password })
+          ElMessage.success('注册成功，请登录')
+          toggleFormType() // 注册成功后切换到登录表单并重置
+        }
+      } catch (err) {
+        // 统一处理错误提示
+        const errorMessage = err?.response?.data?.message || err?.message || '操作失败，请重试'
+        ElMessage.error(errorMessage)
+      } finally {
+        loading.value = false
       }
     } else {
-      await registerApi({ ...data })
-      ElMessage.success('注册成功，请登录')
-      isLogin.value = true
+      ElMessage.error('请检查输入项')
+      // 不需要显式 return false，validate 的回调参数 valid 已经表明了校验结果
     }
-  } catch (err) {
-    ElMessage.error(err?.response?.data?.message || '请求失败')
-  } finally {
-    loading.value = false
-  }
+  })
 }
 </script>
 
@@ -191,23 +218,24 @@ const handleSubmit = async () => {
 .el-form-item {
   margin-bottom: 24px;
 }
-.el-input__wrapper {
-  background: #f3f4f6;
-  border-radius: 10px;
-  border: 1.5px solid #e0e7ff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 4px #e0e7ff33;
+:deep(.el-input__wrapper) {
+  background: #f3f4f6 !important;
+  border-radius: 10px !important;
+  border: 1.5px solid #e0e7ff !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  box-shadow: 0 1px 4px #e0e7ff33 !important;
 }
-.el-input__wrapper:focus-within {
-  border-color: #6366f1;
-  box-shadow: 0 2px 8px #6366f122;
+:deep(.el-input__wrapper.is-focus) {
+  border-color: #6366f1 !important;
+  box-shadow: 0 2px 8px #6366f122 !important;
 }
-.el-input__inner {
-  font-size: 16px;
-  color: #3730a3;
-  background: transparent;
+:deep(.el-input__inner) {
+  font-size: 16px !important;
+  color: #3730a3 !important;
+  background: transparent !important;
 }
 .login-btn {
+  width: 100%;
   font-weight: 700;
   letter-spacing: 2px;
   border-radius: 10px;
