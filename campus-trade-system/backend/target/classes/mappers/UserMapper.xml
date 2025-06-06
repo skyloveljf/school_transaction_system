@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.yourproject.mapper.UserMapper">
+
+    <sql id="userColumns">
+        user_id, username, password_hash, email, registration_date, last_login_date, avatar_url, bio, role
+    </sql>
+
+    <resultMap id="UserResultMap" type="com.example.yourproject.model.User">
+        <id property="userId" column="user_id" javaType="java.lang.Long"/>
+        <result property="username" column="username"/>
+        <result property="passwordHash" column="password_hash"/>
+        <result property="email" column="email"/>
+        <result property="registrationDate" column="registration_date" jdbcType="TIMESTAMP"/>
+        <result property="lastLoginDate" column="last_login_date" jdbcType="TIMESTAMP"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="bio" column="bio"/>
+        <result property="role" column="role"/>
+    </resultMap>
+
+    <select id="findById" resultMap="UserResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="userColumns" />
+        FROM STS_DB.USERS
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="getUsernameById" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT username
+        FROM STS_DB.USERS
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="findByUsername" resultMap="UserResultMap" parameterType="java.lang.String">
+        SELECT <include refid="userColumns" />
+        FROM STS_DB.USERS
+        WHERE username = #{username}
+    </select>
+
+    <select id="findByEmail" resultMap="UserResultMap" parameterType="java.lang.String">
+        SELECT <include refid="userColumns" />
+        FROM STS_DB.USERS
+        WHERE email = #{email}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id" parameterType="com.example.yourproject.model.User">
+        INSERT INTO STS_DB.USERS (username, password_hash, email, registration_date, last_login_date, avatar_url, bio, role)
+        VALUES (#{username}, #{passwordHash}, #{email}, #{registrationDate, jdbcType=TIMESTAMP}, #{lastLoginDate, jdbcType=TIMESTAMP}, #{avatarUrl}, #{bio}, #{role})
+    </insert>
+
+    <update id="update" parameterType="com.example.yourproject.model.User">
+        UPDATE STS_DB.USERS
+        <set>
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="passwordHash != null and passwordHash != ''">password_hash = #{passwordHash},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <!-- registrationDate 通常不更新 -->
+            <if test="lastLoginDate != null">last_login_date = #{lastLoginDate, jdbcType=TIMESTAMP},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if> <!-- 可以允许设为null清空头像 -->
+            <if test="bio != null">bio = #{bio},</if> <!-- 允许更新简介 -->
+            <if test="role != null and role != ''">role = #{role},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM STS_DB.USERS WHERE user_id = #{userId}
+    </delete>
+
+    <select id="findAll" resultMap="UserResultMap">
+        SELECT <include refid="userColumns" />
+        FROM STS_DB.USERS
+        ORDER BY user_id ASC
+    </select>
+
+    <update id="updatePassword">
+        UPDATE STS_DB.USERS
+        SET password_hash = #{newPasswordHash}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateLastLogin">
+        UPDATE STS_DB.USERS
+        SET last_login_date = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+    <!-- 统计查询 -->
+    <select id="countAllUsers" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM STS_DB.USERS
+    </select>
+</mapper>

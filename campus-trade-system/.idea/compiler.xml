@@ -9,8 +9,5 @@
         <module name="backend" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="school_transaction_system" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
 </project>
