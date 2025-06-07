@@ -4,32 +4,10 @@
       <h3>我的发布</h3>
       <div class="action-buttons">
       <el-button type="primary" @click="switchToAddMode" style="margin-bottom: 16px;">发布新商品</el-button>
-        <el-dropdown split-button type="warning" style="margin-bottom: 16px; margin-left: 10px;" @click="cleanupMockProducts">
-          清理模拟商品
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="showRemoveByIdDialog">按ID清理商品</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <!-- Removed el-dropdown for cleanup mock products -->
       </div>
       
-      <!-- 按ID清理对话框 -->
-      <el-dialog v-model="removeByIdDialogVisible" title="按ID清理商品" width="30%">
-        <el-form :model="removeByIdForm">
-          <el-form-item label="商品ID">
-            <el-input v-model="removeByIdForm.productId" type="number" placeholder="请输入要清理的商品ID"></el-input>
-          </el-form-item>
-        </el-form>
-        <template #footer>
-          <span class="dialog-footer">
-            <el-button @click="removeByIdDialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="removeProductById" :disabled="!removeByIdForm.productId">
-              确认清理
-            </el-button>
-          </span>
-        </template>
-      </el-dialog>
+      <!-- Removed el-dialog for remove by ID -->
 
       <div v-if="loadingPosts" class="loading-state">
         <el-skeleton :rows="3" animated />
@@ -115,9 +93,25 @@
           />
         </el-form-item>
 
-        <el-form-item label="分类ID" prop="categoryId">
-          <el-input-number v-model="productForm.categoryId" :min="1" placeholder="请输入分类ID" style="width: 100%;"/>
-          <!-- TODO: Replace with category selection dropdown fetched from /api/categories -->
+        <el-form-item label="商品分类" prop="categoryId">
+          <el-select
+            v-model="productForm.categoryId"
+            placeholder="请选择商品分类"
+            style="width: 100%;"
+            clearable
+            filterable
+            :loading="categoriesLoading"
+          >
+            <el-option
+              v-for="category in categories"
+              :key="category.categoryId"
+              :label="category.categoryName"
+              :value="category.categoryId"
+            />
+          </el-select>
+          <div v-if="categoriesError" class="el-form-item__error" style="color: var(--el-color-danger);">
+            加载分类失败: {{ categoriesError }}
+          </div>
         </el-form-item>
 
         <el-form-item label="商品图片" prop="imageUrl">
@@ -154,12 +148,13 @@
 
 <script setup>
 import { ref, reactive, onMounted, onActivated, computed } from 'vue'
-import { ElMessageBox, ElMessage, ElAlert, ElSkeleton, ElTable, ElTableColumn, ElButton, ElForm, ElFormItem, ElInput, ElInputNumber, ElUpload, ElIcon, ElEmpty, ElTag } from 'element-plus'
+import { ElMessageBox, ElMessage, ElAlert, ElSkeleton, ElTable, ElTableColumn, ElButton, ElForm, ElFormItem, ElInput, ElInputNumber, ElUpload, ElIcon, ElEmpty, ElTag, ElSelect, ElOption } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { getProductsByUserIdApi, createProductApi, updateProductApi, deleteProductApi } from '../api/product'
-import { uploadImageApi } from '../api/upload' // 新增的图片上传API
+import { getCategoriesApi } from '../api/category' // <--- 导入获取分类的API
+import { uploadImageApi } from '../api/upload'
 import authService from '../services/authService'
-import { getImageUrl } from '../utils/imageHelper' // 导入图片URL处理函数
+import { getImageUrl } from '../utils/imageHelper'
 import { generateProductDescriptionApi } from '../api/deepseek'
 
 const posts = ref([])
@@ -170,10 +165,10 @@ const loadingPosts = ref(false)
 const postsError = ref(null)
 const formSubmitting = ref(false)
 const imageUploading = ref(false)
-const removeByIdDialogVisible = ref(false)
-const removeByIdForm = reactive({
-  productId: ''
-})
+
+const categories = ref([]) // <--- 新增：存储分类列表
+const categoriesLoading = ref(false) // <--- 新增：分类加载状态
+const categoriesError = ref(null) // <--- 新增：分类加载错误
 
 const productFormRef = ref(null)
 const productForm = reactive({
@@ -252,7 +247,7 @@ const productFormRules = {
   title: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
   description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
   price: [{ required: true, message: '请输入价格', trigger: 'blur' }, { type: 'number', message: '价格必须为数字' }],
-  categoryId: [{ required: true, message: '请输入分类ID', trigger: 'blur' }, { type: 'number', message: '分类ID必须为数字' }],
+  categoryId: [{ required: true, message: '请选择商品分类', trigger: 'change' }], // <--- 修改提示信息和触发器
   imageUrl: [{ required: true, message: '请上传商品图片', trigger: 'change' }]
 }
 
@@ -313,13 +308,48 @@ const fetchMyPosts = async () => {
   }
 }
 
-onMounted(fetchMyPosts)
-// 当组件被激活时（从其他页面导航回来时）重新加载数据
+const fetchCategories = async () => {
+  categoriesLoading.value = true
+  categoriesError.value = null
+  try {
+    const response = await getCategoriesApi() // 'response' here is the actual array of categories
+    // 检查您的 request 工具是如何返回数据的
+    // 如果 request 工具返回的是完整的 Axios 响应对象，那么实际数据在 response.data 中
+    // categories.value = response.data // <--- 旧代码
+    // 如果您的 request 工具已经处理过并直接返回数据数组，则 response 可能就是您需要的数组
+    categories.value = response; // <--- 修改后的代码：直接使用 response
+
+    console.log('API响应 (直接是数组):', response); // 调试：查看完整的API响应
+    console.log('提取到的分类数据:', categories.value); // 调试：查看赋给ref的数据
+    if (!Array.isArray(categories.value)) {
+        console.warn('从API获取的分类数据不是一个数组!', categories.value);
+        categories.value = []; // 如果不是数组，则置为空数组以避免模板错误
+        categoriesError.value = '获取到的分类数据格式不正确';
+    }
+  } catch (error) {
+    console.error('获取商品分类列表失败:', error)
+    categoriesError.value = error.message || '无法加载分类数据'
+    ElMessage.error('获取商品分类列表失败: ' + categoriesError.value)
+    categories.value = []; // 出错时也清空
+  } finally {
+    categoriesLoading.value = false
+  }
+};
+
+onMounted(() => {
+  fetchMyPosts()
+  fetchCategories() // <--- 在组件挂载时获取分类
+})
+
 onActivated(() => {
   console.log('MyPosts组件被激活，重新加载数据');
   if (mode.value === 'list') {
     fetchMyPosts();
   }
+  // 考虑是否在激活时也需要刷新分类，通常分类不常变动，onMounted获取一次可能就够了
+  // if (!categories.value.length && !categoriesLoading.value) {
+  //   fetchCategories();
+  // }
 })
 
 const resetProductForm = () => {
@@ -336,6 +366,10 @@ const resetProductForm = () => {
 const switchToAddMode = () => {
   resetProductForm()
   mode.value = 'add'
+  // 如果分类列表为空且未在加载，则尝试获取
+  if (!categories.value.length && !categoriesLoading.value && !categoriesError.value) {
+    fetchCategories()
+  }
 }
 
 const switchToEditMode = (post) => {
@@ -351,6 +385,10 @@ const switchToEditMode = (post) => {
   productForm.categoryId = post.categoryId; 
   productForm.imageUrl = post.imageUrl || post.image; // 兼容旧的 image 字段
   mode.value = 'edit';
+  // 如果分类列表为空且未在加载，则尝试获取
+  if (!categories.value.length && !categoriesLoading.value && !categoriesError.value) {
+    fetchCategories()
+  }
 }
 
 const switchToListView = () => {
@@ -562,127 +600,6 @@ const getProductStatusType = (status) => {
   };
   return statusTypeMap[status] || 'primary';
 };
-
-const cleanupMockProducts = () => {
-  ElMessageBox.confirm(
-    '此操作将清除所有模拟商品数据（包括使用mock图片URL的商品）。这些数据在数据库中不存在，只在前端显示。确认继续？',
-    '清理确认',
-    {
-      confirmButtonText: '确认清理',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    // 清理所有localStorage中的模拟商品数据
-    localStorage.removeItem('mockProducts');
-    
-    // 获取有效商品ID列表用于过滤
-    const validProductIdsStr = localStorage.getItem('validProductIds');
-    let validProductIds = [];
-    if (validProductIdsStr) {
-      try {
-        validProductIds = JSON.parse(validProductIdsStr);
-      } catch (e) {
-        console.error('解析validProductIds失败:', e);
-      }
-    }
-    
-    // 标记为模拟数据的条件：
-    // 1. 图片URL包含"mock_"
-    // 2. 商品ID为负数（我们约定模拟数据使用负数ID）
-    // 3. 商品具有isMockData=true标记
-    // 4. 商品ID不在有效ID列表中
-    const mockProducts = posts.value.filter(p => 
-      (p.imageUrl && p.imageUrl.includes('mock_')) || 
-      (p.id < 0) || 
-      p.isMockData ||
-      (validProductIds.length > 0 && !validProductIds.includes(p.id))
-    );
-    
-    if (mockProducts.length === 0) {
-      ElMessage.info('没有发现模拟商品数据');
-      return;
-    }
-    
-    // 从列表中移除模拟数据，只保留真正在数据库中存在的商品
-    posts.value = posts.value.filter(p => 
-      !((p.imageUrl && p.imageUrl.includes('mock_')) || 
-        (p.id < 0) || 
-        p.isMockData ||
-        (validProductIds.length > 0 && !validProductIds.includes(p.id)))
-    );
-    
-    ElMessage.success(`成功清理了 ${mockProducts.length} 个模拟商品`);
-    console.log('已清理的模拟商品:', mockProducts);
-  }).catch(() => {
-    ElMessage.info('已取消清理操作');
-  });
-}
-
-const showRemoveByIdDialog = () => {
-  removeByIdForm.productId = '';
-  removeByIdDialogVisible.value = true;
-}
-
-const removeProductById = () => {
-  const productId = parseInt(removeByIdForm.productId);
-  
-  // 允许清理任何ID的商品，包括负数ID（模拟数据）
-  if (isNaN(productId)) {
-    ElMessage.error('请输入有效的商品ID');
-    return;
-  }
-  
-  const productToRemove = posts.value.find(p => p.id === productId);
-  
-  if (!productToRemove) {
-    ElMessage.error(`未找到ID为 ${productId} 的商品`);
-    return;
-  }
-  
-  // 确认提示，确保用户知道他们在做什么
-  ElMessageBox.confirm(
-    `确认要从界面上移除商品 "${productToRemove.title}" (ID: ${productId}) 吗？如果这是一个模拟商品，它将被完全移除。`,
-    '确认清理',
-    {
-      confirmButtonText: '确认清理',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    // 从前端列表中移除
-    posts.value = posts.value.filter(p => p.id !== productId);
-    
-    // 检查是否是模拟数据
-    const isMockData = (productToRemove.imageUrl && productToRemove.imageUrl.includes('mock_')) || 
-                       (productId < 0) || 
-                       productToRemove.isMockData;
-
-    if (isMockData) {
-      // 从localStorage中删除模拟商品
-      const mockProductsData = localStorage.getItem('mockProducts');
-      if (mockProductsData) {
-        try {
-          let mockProducts = JSON.parse(mockProductsData);
-          const initialLength = mockProducts.length;
-          mockProducts = mockProducts.filter(p => p.id !== productId);
-          
-          localStorage.setItem('mockProducts', JSON.stringify(mockProducts));
-          console.log(`已从本地存储中删除模拟商品 (ID: ${productId})`);
-        } catch (e) {
-          console.error('处理本地模拟商品数据失败:', e);
-        }
-      }
-      ElMessage.success(`已成功从本地清理模拟商品 (ID: ${productId})`);
-    } else {
-      ElMessage.success(`已从界面移除商品 (ID: ${productId})，但数据库中的记录仍然存在`);
-    }
-    
-    removeByIdDialogVisible.value = false;
-  }).catch(() => {
-    ElMessage.info('已取消清理操作');
-  });
-}
 </script>
 
 <style scoped>

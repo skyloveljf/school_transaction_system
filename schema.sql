@@ -129,6 +129,22 @@ COMMENT ON COLUMN PRODUCTS.image_url IS '商品主图片URL';
 COMMENT ON COLUMN PRODUCTS.post_date IS '发布时间';
 COMMENT ON COLUMN PRODUCTS.views IS '浏览次数';
 
+-- 插入示例商品分类数据
+INSERT INTO CATEGORIES (category_name, description) VALUES
+('电子产品', '包括手机、电脑、平板、相机、耳机、充电宝等各类二手电子设备。');
+
+INSERT INTO CATEGORIES (category_name, description) VALUES
+('书籍教材', '各类二手教科书、考研资料、小说、杂志等。');
+
+INSERT INTO CATEGORIES (category_name, description) VALUES
+('生活用品', '包括宿舍用品、小家电、厨具、装饰品等日常所需。');
+
+INSERT INTO CATEGORIES (category_name, description) VALUES
+('服饰鞋包', '二手衣物、鞋子、包包、配饰等，请确保清洁卫生。');
+
+INSERT INTO CATEGORIES (category_name, description) VALUES
+('运动户外', '运动器材、户外装备、自行车、球类等。');
+
 -- 订单表 (ORDERS)
 CREATE TABLE ORDERS (
     order_id BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -176,21 +192,21 @@ CREATE TABLE COMMENTS (
     comment_id BIGINT IDENTITY(1,1) PRIMARY KEY,
     product_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    parent_comment_id BIGINT,
+    parent_comment_id BIGINT, -- 用于指向父评论的ID
     content CLOB NOT NULL,
-    created_time TIMESTAMP DEFAULT SYSTIMESTAMP, -- MODIFIED
+    created_time TIMESTAMP DEFAULT SYSTIMESTAMP,
     CONSTRAINT FK_COMMENT_PRODUCT FOREIGN KEY (product_id) REFERENCES PRODUCTS(product_id) ON DELETE CASCADE,
     CONSTRAINT FK_COMMENT_USER FOREIGN KEY (user_id) REFERENCES USERS(user_id) ON DELETE CASCADE,
-    CONSTRAINT FK_COMMENT_PARENT FOREIGN KEY (parent_comment_id) REFERENCES COMMENTS(comment_id) ON DELETE CASCADE
+    CONSTRAINT FK_COMMENT_PARENT FOREIGN KEY (parent_comment_id) REFERENCES COMMENTS(comment_id) ON DELETE CASCADE -- 外键约束也使用 parent_comment_id
 );
 
 COMMENT ON TABLE COMMENTS IS '商品评论表';
 COMMENT ON COLUMN COMMENTS.comment_id IS '评论ID (主键, 自增)';
 COMMENT ON COLUMN COMMENTS.product_id IS '关联的商品ID (外键)';
 COMMENT ON COLUMN COMMENTS.user_id IS '发表评论的用户ID (外键)';
-COMMENT ON COLUMN COMMENTS.parent_comment_id IS '父评论ID (用于回复功能)';
+COMMENT ON COLUMN COMMENTS.parent_comment_id IS '父评论ID (用于回复功能)'; -- 列注释也指明 parent_comment_id
 COMMENT ON COLUMN COMMENTS.content IS '评论内容';
-COMMENT ON COLUMN COMMENTS.created_time IS '评论发表时间'; -- MODIFIED
+COMMENT ON COLUMN COMMENTS.created_time IS '评论发表时间';
 
 -- 会话表 (CONVERSATIONS)
 CREATE TABLE CONVERSATIONS (

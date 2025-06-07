@@ -5,291 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="12f8c81f-3c66-4fa0-805c-fe4b3f8f29d0" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/school_transaction_system.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/CampusTradeSystemApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/JwtAuthenticationEntryPoint.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/JwtRequestFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/OpenApiConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/PasswordEncoderConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/StorageProperties.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/config/WebMvcConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/CategoryController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/CommentController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/ConversationController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/DeepSeekController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/FavoriteController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/FileUploadController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/OrderController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/ProductController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/TestController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/controller/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ApiResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/AuthResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/CategoryCreateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/CategoryDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/CategoryUpdateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ChangePasswordRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/CommentCreateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/CommentDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ConversationDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/FavoriteDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/FavoriteRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/MessageDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/OrderCreateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/OrderResponseDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/OrderStatusUpdateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ProductBasicDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ProductCreateDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ProductDetailDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ProductResponseDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/ProductUpdateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/UserDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/UserLoginRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/UserProfileDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/UserRegisterRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/UserUpdateRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/deepseek/DeepSeekChatRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/dto/deepseek/DeepSeekChatResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/exception/BusinessRuleException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/exception/FileStorageException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/exception/GlobalExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/exception/ResourceNotFoundException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/exception/UnauthorizedOperationException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/CategoryMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/CommentMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/ConversationMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/FavoriteMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/MessageMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/OrderMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/ProductMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/mapper/UserMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Category.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Comment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Conversation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Favorite.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Message.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Order.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/Product.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/enums/OrderStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/model/enums/ProductStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/CategoryService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/CommentService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/ConversationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/DeepSeekService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/FavoriteService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/FileStorageService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/FileUploadService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/OrderService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/ProductService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/UserService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/CategoryServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/CommentServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/ConversationServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/DeepSeekServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/FavoriteServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/FileSystemStorageService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/OrderServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/ProductServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/service/impl/UserServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/util/JwtTokenUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/java/com/example/yourproject/utils/Result.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/db/update_users_table.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/mappers/CategoryMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/mappers/CommentMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/mappers/FavoriteMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/mappers/OrderMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/mappers/ProductMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/src/main/resources/mappers/UserMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/CampusTradeSystemApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/JwtAuthenticationEntryPoint.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/JwtRequestFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/OpenApiConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/PasswordEncoderConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/SecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/StorageProperties.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/config/WebMvcConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/AuthController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/CategoryController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/CommentController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/ConversationController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/DeepSeekController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/FavoriteController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/FileUploadController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/OrderController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/ProductController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/TestController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/controller/UserController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ApiResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/AuthResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/CategoryCreateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/CategoryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/CategoryUpdateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ChangePasswordRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/CommentCreateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/CommentDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ConversationDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/FavoriteDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/FavoriteRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/MessageDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/OrderCreateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/OrderResponseDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/OrderStatusUpdateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ProductBasicDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ProductCreateDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ProductDetailDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ProductResponseDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/ProductUpdateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/UserDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/UserLoginRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/UserProfileDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/UserRegisterRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/UserUpdateRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/deepseek/DeepSeekChatRequest$Message.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/deepseek/DeepSeekChatRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/deepseek/DeepSeekChatResponse$Choice.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/deepseek/DeepSeekChatResponse$Message.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/deepseek/DeepSeekChatResponse$Usage.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/dto/deepseek/DeepSeekChatResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/exception/BusinessRuleException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/exception/FileStorageException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/exception/GlobalExceptionHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/exception/ResourceNotFoundException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/exception/UnauthorizedOperationException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/CategoryMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/CommentMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/ConversationMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/FavoriteMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/MessageMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/OrderMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/ProductMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/mapper/UserMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Category.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Comment.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Conversation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Favorite.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Message.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Order.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/Product.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/User.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/enums/OrderStatus.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/model/enums/ProductStatus.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/CategoryService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/CommentService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/ConversationService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/DeepSeekService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/FavoriteService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/FileStorageService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/FileUploadService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/OrderService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/ProductService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/UserService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/CategoryServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/CommentServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/ConversationServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/DeepSeekServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/FavoriteServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/FileSystemStorageService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/OrderServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/ProductServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/service/impl/UserServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/util/JwtTokenUtil.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/com/example/yourproject/utils/Result.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/db/update_users_table.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/mappers/CategoryMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/mappers/CommentMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/mappers/FavoriteMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/mappers/OrderMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/mappers/ProductMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/classes/mappers/UserMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/3d96bcf4-3bf4-44c4-a35f-edac671597cd.jfif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/49a23d02-7908-4ca6-ab88-201cd82ad343.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/7e49526d-265e-4072-b23c-1de5477e604f.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/8ee9d75d-ae58-482c-b4cb-32147227d38d.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/a20aa72d-a95d-455d-9397-a6c3c68484cf.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/b84456ce-1633-429b-8352-b9da2fb49523.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/d1634651-8fbe-4354-9c07-4626edb687e1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/e2d07eaa-2fbe-42dc-8a5d-57d700aadd48.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/f591b946-90d0-4db5-892a-1a4aa657a901.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_backend/uploads/images/fe0640ab-384a-4362-96e1-6055a041d63e.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/.editorconfig" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/.vscode/extensions.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/chat_dialog_improvement.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/conclusion_fronted.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/eslint.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/front.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/jsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/App.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/comment.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/conversation.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/deepseek.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/favorite.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/message.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/product.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/upload.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/api/user.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/BrowseProducts.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/ChatDialog.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/ChatWindow.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/CommentSection.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/Favorites.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/MessageList.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/MyPosts.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/ProductCard.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/components/UserProfile.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/main.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/router/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/services/authService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/store/user.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/utils/imageHelper.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/utils/request.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/views/AdminPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/views/LoginRegister.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/views/ProductDetail.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/src/views/UserHome.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/structure.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/school_transaction_system_frontend/vite.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/db/update_users_table.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/mappers/CategoryMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/mappers/CommentMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/mappers/FavoriteMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/mappers/OrderMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/mappers/ProductMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/strool_transaction_system_backend/target/classes/mappers/UserMapper.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/campus-trade-system/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/campus-trade-system/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/campus-trade-system/backend/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/campus-trade-system/backend/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/campus-trade-system/backend/target/classes/schema.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/campus-trade-system/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/campus-trade-system/frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/campus-trade-system/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/campus-trade-system/frontend/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -299,6 +20,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "skyloveljf"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/skyloveljf/school_transaction_system.git",
+    "accountId": "14095867-1d64-40bb-a086-2034ac2a1b96"
+  }
+}]]></component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -309,10 +42,10 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2y8H5z02kSFHaIT8qHPZhFobRJh" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -320,17 +53,25 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.CampusTradeSystemApplication.executor": "Run",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "A:/school_transaction_system",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "项目",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "File.Encoding",
+    "settings.editor.selected.configurable": "Errors",
     "vue.rearranger.settings.migration": "true",
     "应用程序.CampusTradeSystemApplication.executor": "Run"
   }
@@ -372,6 +113,7 @@
       <option name="presentableId" value="Default" />
       <updated>1749209100430</updated>
       <workItem from="1749209101667" duration="221000" />
+      <workItem from="1749276380193" duration="3972000" />
     </task>
     <servers />
   </component>

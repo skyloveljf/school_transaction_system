@@ -19,8 +19,6 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-              <el-dropdown-item command="settings">设置</el-dropdown-item>
               <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -131,13 +129,7 @@ const openStatsDialog = () => {
 }
 
 const handleDropdownCommand = (command) => {
-  if (command === 'profile') {
-    console.log('个人中心')
-  } else if (command === 'settings') {
-    if (adminSettingsDialogRef.value) {
-      adminSettingsDialogRef.value.visible = true
-    }
-  } else if (command === 'logout') {
+  if (command === 'logout') {
     authService.clearLoginInfo()
     router.push('/')
   }
